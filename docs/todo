@@ -1,0 +1,22 @@
+
+[X] Update Class Diagram for vision (28/02/26)
+[X] See how to best store the trial_positioning.py (23/02/26)
+[X] Create working toml for project (23/02/26)
+[ ] Create branch on git for this
+[ ] Create Readme for project
+----------
+[X] Start Analyzing the Tabletop Engine Aspect (25/02/26)
+[x] See pygame
+[X] analyze structure of tokens, objects and places of interest (01/03/26)
+----------
+[X] Create Camera for Pygame
+[X] Create Sprite System
+[X] Create Token For Pygame
+[X] Create Function to find close to point
+[X] Create Function to find empty space
+[X] Create Function to fix to grid
+-----------
+[X] Create Line and point objects
+[X] Create a PointerManager
+[X] Create OneFinger Pointer Gesture
+[X] Create TwoFinger Pointer Gesture

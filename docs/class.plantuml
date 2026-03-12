@@ -1,0 +1,198 @@
+@startuml Class
+
+class CharucoCoordTransformManager {
+    - cur_positions
+    + DoCallibration(cam_img,top_left_coord,size) : bool
+    + DoCallibrationCorners(cam_img,top_left_corner,bottom_right_corner) : bool
+    + GetCalibrationImage(top_left,size_squares, square_length_px) : (width,height,img)
+}
+
+class CoordTransformManager {
+    - cur_homography
+    - cur_inverse_homography
+    + CoordTransformManager(in_pts,out_pts)
+    + CopyCalibration(CoordTransformManager)
+    + GetInverse() : CoordTransformManager
+    + TransformTo(board_coord)
+    + TransformFrom(cam_coord)
+    + static JoinTransform(CoordTransformManager,CoordTransformManager): CoordTransformManager
+}
+CoordTransformManager <|-- CharucoCoordTransformManager
+
+class TabletopVisionManager {
+    - RunVision()
+    - PreprocessImage()
+    + StartManager(cam_id,fps)
+    + StopManager()
+    + GetCalibrateImage(top_left,size)
+    + Calibrate(max_time) : bool
+
+}
+
+class HandData
+{
+    + id:int
+    + visible: bool
+    + img_coords: np.ndarray
+    + world_coords: np.ndarray
+    + left_hand: bool
+    + finger_open: list[int]
+    + pinch: bool
+    + normal_status: int
+    + normal_vec: np.ndarray
+
+    + FingerOpen(finger_id) : bool
+    + FingerClosed(finger_id) : bool
+    + FacingCam() : bool
+    + FacingAwayCam(finger_id,finger_id) : bool
+
+    + FindNormal(finger_id)
+    + FindAngle(finger_id)
+
+}
+class HandTracker {
+    + HandTracker(id,is_left_hand,position,landmarks,world_landmarks,cur_frame,delta_time)
+    + Update(self,position,landmarks,world_landmarks,cur_frame,delta_time)
+    + GetHandData() : HandData
+
+}
+
+class HandsManager {
+    - tracker_left
+    - tracker_rright
+    - hand_detector
+    - hand_dict
+    + TabletopVisionManager(fps,width,height) 
+    + RunVision(rgb_img) : hand_list, removed_hand_ids
+}
+
+class TabletopManager {
+    - TokenList
+    - Update()
+    - Draw(cam)
+    + SendCommand()
+}
+
+
+
+
+TabletopVisionManager *-u CharucoCoordTransformManager
+HandsManager o- HandTracker
+
+HandTracker -- HandData
+
+TabletopVisionManager *- HandsManager
+
+
+
+
+
+class LLMWorker {
+    + start(ctx_size,model)
+    + stop()
+    + async prompt(prompt, message, priority, ttl)
+}
+
+class EmbeddedDescription {
+    - context_vector
+    - description
+    - id
+    - type
+}
+
+
+class TabletopObject {
+    - tt
+    - id
+    + GetTabletop()
+    + Draw(camera)
+    + DrawOverlay(camera)
+    + Update()
+    + Start()
+}
+
+class TabletopPOI {
+    - description
+    - pos
+    - radius
+}
+
+class Token {
+    - pos
+    - size
+    - texture_id
+    - description
+    + HitToken(Token)
+    + HitPoint(pt)
+    + HitBox(Box)
+
+}
+
+class TokenManager {
+    + AddToken(token)
+    + RemoveToken(token_id)
+    + PickToken(position,picker_id)
+    + UnpickToken(position,picker_id)
+    + UpdatePickToken(position,picker_id)
+}
+
+class TabletopManagerCommandQueue {
+    + ProcessCommands(TabletopManager)
+    + AddCommand(TabletopManagerCommand)
+}
+
+class TabletopManagerCommand
+{
+    + execute(TabletopManager)
+}
+
+TabletopManagerCommandQueue -- TabletopManagerCommand
+
+ TabletopManagerCommandQueue --* TabletopManager
+
+class GestureManager {
+    - hand_gesture_dict
+    + Update(hands,removed_hands,coord_transform,command_queue)
+}
+
+class HandGesture {
+    + Update(command_queue,hand_data,coord_tranform)
+    + Start(command_queue,hand_data,coord_tranform)
+    + End(command_queue,hand_data,coord_tranform)
+}
+
+class PinchGesture {
+    + Update(command_queue,hand_data,coord_tranform)
+    + Start(command_queue,hand_data,coord_tranform)
+    + End(command_queue,hand_data,coord_tranform)
+}
+HandGesture <|-- PinchGesture
+
+GestureManager o- HandGesture
+
+TabletopVisionManager *-- GestureManager
+
+GestureManager -- TabletopManagerCommandQueue
+
+
+TabletopManager o-- TabletopObject
+TabletopObject <|-- Token
+TabletopObject <|-- TabletopPOI
+
+TabletopManager *-- TokenManager
+TabletopManager *-- POIManager
+TokenManager o-- Token
+POIManager o-- TabletopPOI
+
+TabletopManagerCommandQueue -r-- PinchGesture
+
+class PinchCommand {
+    + PinchCommand(pinch_id,position,event)
+    + execute(TabletopManager)
+}
+TabletopManagerCommand <|-- PinchCommand
+TokenManager - PinchCommand
+
+PinchGesture - PinchCommand
+
+@enduml

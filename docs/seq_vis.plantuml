@@ -1,0 +1,10 @@
+@startuml seq
+
+participant VerbalInput
+queue TextQueue
+VisionInput -> CommandGen: VisionData(hands)
+activate CommandGen
+
+VerbalInput -> TextQueue : last_text
+
+@enduml
