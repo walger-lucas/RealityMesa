@@ -70,9 +70,9 @@ class Camera:
         text_pos.x += pixel_offset[0]
         text_pos.y += pixel_offset[1]
         if center:
-            text_rect.center = text_pos
+            text_rect.center = (int(text_pos.x),int(text_pos.y))
         else:
-            text_rect.topleft = text_pos
+            text_rect.topleft = (int(text_pos.x),int(text_pos.y))
         
 
         surface.blit(text_surface, text_rect)

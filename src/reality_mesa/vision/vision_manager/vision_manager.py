@@ -9,7 +9,8 @@ import cv2
 import time
 import numpy as np
 if TYPE_CHECKING:
-    from reality_mesa.tabletop_engine import Tabletop
+    from reality_mesa.tabletop_engine.tabletop import Tabletop
+    
 
 
 class VisionManager:

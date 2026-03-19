@@ -5,7 +5,7 @@ from reality_mesa.infra import CommandQueue
 from reality_mesa.vision.homography import CoordTransformManager
 from abc import abstractmethod, ABC
 if TYPE_CHECKING:
-    from reality_mesa.tabletop_engine import Tabletop
+    from reality_mesa.tabletop_engine.tabletop import Tabletop
 class HandGesture(ABC):
     STARTUP_TIME : float = 0.0
     PRIORITY:int = 0

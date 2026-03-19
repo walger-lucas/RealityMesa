@@ -1,0 +1,43 @@
+{
+    "cam_config" : {
+        "fps":45,
+        "cam_id":0,
+        "resolution":[1920,1080]
+    },
+    "display_id":1,
+    "image_folder": "./images",
+    "size":[25,25],
+    "unit":"m",
+    "unit_size":1.5,
+    "img":"back.jpeg",
+
+    "tokens": [
+        {
+            "description": "Goblin alto e forte, com uma grande cicatriz no peito, seu nome é José e tem olhos verdes, assim como sua pele. Ele é careca, e tem orelhas pontudas",
+            "size": [2,2],
+            "pos": [10,4],
+            "img":"file.png"
+        },
+        {
+            "description": "Goblin baixo e fraco, com uma grande cicatriz no peito, seu nome é Guilherme e tem olhos azuis, assim como sua pele. Ele é careca, e tem orelhas pontudas",
+            "size": [1,1],
+            "pos": [4,9],
+            "img":"gob.png"
+        }
+
+    ],
+
+    "poi": [
+        {
+            "description": "Local Qualquer 1",
+            "pos": [3,17]
+        },
+        {
+            "description": "Local qualquer 2",
+            "pos": [20,12]
+
+        }
+
+    ]
+
+}

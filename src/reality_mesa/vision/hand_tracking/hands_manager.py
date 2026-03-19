@@ -55,9 +55,9 @@ class HandsManager:
             base_options=base_options,
             num_hands=8,
             running_mode=vision.RunningMode.VIDEO,
-            min_hand_detection_confidence=0.3,
-            min_hand_presence_confidence=0.3,
-            min_tracking_confidence=0.8,
+            min_hand_detection_confidence=0.2,
+            min_hand_presence_confidence=0.2,
+            min_tracking_confidence=0.6,
         )
         self.hand_detector = vision.HandLandmarker.create_from_options(options)
         self.timestamp = 0

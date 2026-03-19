@@ -77,7 +77,7 @@ class CharucoCoordTransformManager(CoordTransformManager):
             img_pts = np.vstack([c.reshape(-1, 2) for c in markerCorners]).astype(np.float32)
         else:
             return False
-        if(len(charuco_pts)<4):
+        if(len(charuco_pts)<5):
             return False
         board_px_to_image = CoordTransformManager(charuco_pts,img_pts)
         out = CoordTransformManager.JoinTransform(screen_space_to_board_px,board_px_to_image)

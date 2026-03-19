@@ -5,7 +5,7 @@ from reality_mesa.vision.homography.coord_transform import CoordTransformManager
 from .hand_gesture_generator import HandData, HandGesture,HandGestureGenerator,FingerEnum
 from reality_mesa.vision.hand_tracking.hand_data import DistanceNorm
 if TYPE_CHECKING:
-    from reality_mesa.tabletop_engine import Tabletop, pointer
+    from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.tabletop_engine.pointer import Pointer
 import pygame
 import numpy as np

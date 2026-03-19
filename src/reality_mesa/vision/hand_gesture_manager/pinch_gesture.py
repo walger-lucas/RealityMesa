@@ -4,7 +4,7 @@ from reality_mesa.infra.command_queue import CommandQueue, Command, send_command
 from reality_mesa.vision.homography.coord_transform import CoordTransformManager
 from .hand_gesture_generator import HandData, HandGesture,HandGestureGenerator
 if TYPE_CHECKING:
-    from reality_mesa.tabletop_engine import Tabletop
+    from reality_mesa.tabletop_engine.tabletop import Tabletop
 import pygame
 
 class PinchCommand(Command["Tabletop"]):

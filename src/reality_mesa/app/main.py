@@ -1,36 +1,20 @@
 import pygame
 import sys
-from reality_mesa.tabletop_engine import tabletop, token
 from reality_mesa.rendering import Camera
 from reality_mesa.vision.vision_manager import StopVisionManager
 from reality_mesa.infra import send_command
 import time
-from reality_mesa.tabletop_engine.pointer import Pointer
+from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfInterest
 pygame.init()
 
-display_id = 1
+tt, cam, screen = tabletop_read("C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
 # Create window
-width, height = pygame.display.get_desktop_sizes()[display_id]
-screen = pygame.display.set_mode(
-    (width, height),
-    pygame.NOFRAME,
-    display=display_id
-)
+
 pygame.display.set_caption("Reality Mesa")
 
 clock = pygame.time.Clock()
 running = True
-tt_back= pygame.Surface(pygame.Vector2(1000,1000))
-tt_back.fill((200,200,200))
-token_img = pygame.Surface(pygame.Vector2(50,50))
-token_img.fill((255,0,0))
-tt = tabletop.Tabletop(tt_back,(10,10))
-tok = token.Token("basic",pygame.Vector2(5,5),pygame.Vector2(1,1),token_img)
-tt.AddObject(tok)
-cam  = Camera((800, 600),50)
-cam.pos =  pygame.Vector2(5,5)
-tok2 = token.Token("basic",pygame.Vector2(2,2),pygame.Vector2(3,3),token_img)
-tt.AddObject(tok2)
+
 
 
 while running:
@@ -39,12 +23,22 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_0:
-                tok.Move(pygame.Vector2(2,2),True,False)
-            if event.key == pygame.K_1:
-                tok.Move(pygame.Vector2(8,8),True,False)
             if event.key == pygame.K_c:
                 tt.Calibrate()
+            if event.key == pygame.K_1:
+                cam.zoom = min(cam.zoom +0.25 , 10)
+            if event.key == pygame.K_2:
+                cam.zoom = max(0.25,cam.zoom-0.25)
+            if event.key == pygame.K_UP:
+                cam.pos += pygame.Vector2(0,-1)
+            if event.key == pygame.K_DOWN:
+                cam.pos += pygame.Vector2(0,1)
+            if event.key == pygame.K_LEFT:
+                cam.pos += pygame.Vector2(-1,0)
+            if event.key == pygame.K_RIGHT:
+                cam.pos += pygame.Vector2(1,0)
+            if event.key == pygame.K_p:
+                PointOfInterest.ShowPOIs(not PointOfInterest.IsShowingPOIs()) 
 
     # --- Update logic ---
     # (nothing yet)
