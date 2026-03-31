@@ -1,0 +1,60 @@
+@startuml expand
+
+title SemanticSubgraphExpander.Expand
+
+start
+floating note left
+<b>Arguments:
+    <b>graph:</b> Original Sematic Graph
+    <b>subgraph:</b> SematicSubgraph 
+    <b>n_iterations:</b> how many iterations of expansion should happen,
+    <b>start_iteration: start iteration if others already happened</b>
+    <b>frontier:</b> frontier to be internally updated use subgraph.Frontier() to start
+end note
+
+if (frontier is None) then (yes)
+:frontier = subgraph.Frontier();
+endif
+
+:self.iterations = n_iterations-start_iteration;
+while (iterations is not 0 and subgraph size is smaller then real max size?) is (yes)
+
+    :new_frontier = empty;
+    while (frontier not empty?) is (yes)
+        :pop node and origin_triples from frontier;
+        :triples = expand_node(graph, subgraph, node);
+        note left
+        gets list of up to self.max_main_triples 
+        and self.max_other_triples triple
+        , that have similarity over minimum. and not equal to node origins
+        for each
+        :multiply by reduced_bonus reduced triples;
+        :calculates score by doing max(sim(node_origins_triple,triple))*k_original + score*(1-k_original);
+        :multiply by max(1-k_depth*(n_iterations-iterations),0);
+        :remove if < min similarity;
+        end note
+        :count = 0;
+        while(triples is not empty?) is (yes)
+            : triple = triples.pop();
+            if(triple in subgraph?) then(yes)
+                :set its score to max(old,current)+(1-max(old,current))*k_repetition;
+            else (no)
+
+                if(current node has not added more then max_node?) then (yes)
+                    :count++;
+                    :add triple to subgraph with current score;
+                    :other side of triple not in subgraph -> add other side of triple, that is not current node, to new_frontier;
+                    :other side of triple in frontier -> add triple to origin list on frontier node;
+                endif
+            endif
+        
+        endwhile(no)
+    endwhile (no)
+:frontier = new_frontier;
+endwhile(no)
+:Prune to max_size;
+end
+
+
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml SemanticGraph_Semantics
+
+class SemanticNode {
+    + SemanticNodeSimilarity()
+    + ToNaturalLanguage()
+}
+
+class IdentifierNode {
+    + SemanticNodeSimilarity()
+}
+
+class NaturalLanguageNode {
+    - embedding
+    + SemanticNodeSimilarity()
+}
+
+SemanticNode <|-- IdentifierNode
+SemanticNode <|-- NaturalLanguageNode
+
+
+class SemanticTriple {
+    + ToNaturalLanguage()
+}
+
+SemanticTriple o-- SemanticNode
+
+@enduml

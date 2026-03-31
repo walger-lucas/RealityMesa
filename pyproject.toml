@@ -15,6 +15,9 @@ dependencies = [
     "numpy>=1.26,<2",
     "opencv-contrib-python>=4.9,<5",
     "pygame-ce"
+    "sentence-transformers>=5.3.0,<5.4.0"
+    "openai"
+    "requests"
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,129 @@
+@startuml SemanticGraph
+class SemanticSubgraph {
+    - triples: set[id]
+    - node_frontier: dict[id_node,list[id_triple]]
+    - scores: dict[id,scores]
+    - orphan_triples: list[SemanticTriple]
+
+    + AddNode(SemanticGraph,SemanticNode)
+    + AddTriple(SemanticGraph,SemanticTriple)
+    + RemoveNode(id)
+    + RemoveTriple(id)
+
+    + ModifyScore(TripleType,k_modifier)
+    + PruneSize(max_size)
+
+    + SetAge(age)
+    + Join(SemanticGraph,SemanticSubgraph,k_repetition,k_age,max_age)
+
+    + ToString(SemanticGraph)
+    + ToNaturalLanguage(SemanticGraph)
+
+}
+class SemanticSubgraphExpander {
+    - k_depth
+    - k_min_similarity
+    - k_repetition_bonus
+    - k_reduced_triple_bonus
+    - max_triples_per_node
+    - k_original
+    - max_main
+    - max_others
+    + SemanticSubgraphExpander(k_depth,k_min_similarity...)
+    + Expand(SemanticGraph,SemanticSubgraph, original_embedding,n_iterations)
+    + ExpandNode(SemanticGraph,SemanticSubgraph,node,disconsider): list[tuple[triple,bool]]
+}
+SemanticSubgraphExpander -u-> SemanticSubgraph : expands
+
+
+
+enum TripleType {
+    COMMON_TRIPLE
+    MAIN_TRIPLE
+    REDUCED_TRIPLE
+}
+class SemanticGraph {
+    - id_nodes: dict[id,IdentifierNode]
+    - ln_nodes: dict[id,NaturalLanguageNode]
+    - triples: dict[triple_id,SemanticTriple]
+    - adj_list: dict[node_id,list[triple_id]] 
+    - radj_list: dict[node_id, list[triple_id]]
+    - equality_graph: dict[node_id, tuple[node_id,score]]
+
+    + FindSubgraph(embeddeding,max_main_triples,min_main_triple_similarity,max_other_triples,k_other_triple_similarity,min_other_triple_similarity):SemanticSubgraph
+
+    + AddNode(SemanticNode)
+    + AddTriple(SemanticTriple)
+    + GetLnNode(str)
+    + GetIdNode(id)
+    + RemoveNode(id)
+    + RemoveTriple(id)
+    + ToString()
+    + ToNaturalLanguage()
+    + SemanticGraph(max_nodes,min_proximity)
+    + GetAdj(node_id): list[triple_id] | None
+    + GetRAdj(node_id): list[triple_id] | None
+    + GetNode(node_id) : SemanticNode | None
+    + GetEqualityList(node_id) : list[tuple[ids,score]] | None
+}
+SemanticGraph -l-> SemanticSubgraph:generates
+
+
+class SemanticNode {
+- node_unique_id
+~ node_identifier: str
++ SetId(id:int)
++ GetId():int
++ MatchScore(SemanticNode): float
++ StringMatchScore(text): float
++ SemanticNode(node_identifier)
++ ToString()
++ ToNaturalLanguage()
+}
+
+class IdentifierNode {
++ MatchScore(SemanticNode)
++ IdentifierNode(str)
+}
+
+class NaturalLanguageNode {
+- embedding: np.array
++ MatchScore(SemanticNode)
++ NaturalLanguageNode(str, embedding)
+}
+SemanticNode <|-- IdentifierNode
+SemanticNode <|-- NaturalLanguageNode
+
+TripleType.SemanticTriple
+ class SemanticTriple {
+
+    - triple_id
+    - start: SemanticNode*
+    - finish: SemanticNode*
+    - relation: str
+    - bidirectional: bool
+    - both_end_search: bool
+    - embedded_relation: np.array
+    - is_permanent: bool
+    - time_lived: float
+    - triple_type:TripleType
+
+    + StringCompareEmbedding(): float
+    + SemanticTriple(start_node,end_node,relation:str,\
+    embedded_relation: np.array,bidirectional,\
+    both_end_search,is_permanent)
+    + GetStartNode():SemanticNode*
+    + GetEndNode(): SemanticNode*
+    + IsValid(SemanticGraph): bool
+    + SetId(id:int)
+    + GetId():int
+    + ToString()
+    + ToNaturalLanguage()
+    + SearchForEqual(): triple(IdentifierNode | None, bool)
+ }
+
+ SemanticTriple o- SemanticNode
+
+ SemanticGraph o-- SemanticTriple
+ SemanticGraph o-- SemanticNode 
+@enduml

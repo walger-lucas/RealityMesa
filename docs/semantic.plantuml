@@ -1,0 +1,77 @@
+@startuml SemanticGraph
+
+class SemanticSubgraph {
+    - triples: Set<TripleId>
+    - node_frontier: Map<NodeId, List<TripleId>>
+    - scores: Map<ElementId, Score>
+    - orphan_triples: List<SemanticTriple>
+
+    + AddNode(graph, node)
+    + AddTriple(graph, triple)
+    + RemoveNode(id)
+    + RemoveTriple(id)
+
+    + Expand(graph, embedding, n_iterations, ...)
+    + ModifyScore(type, modifier)
+    + LimitSize(max_size)
+
+    + Join(graph, other_subgraph, ...)
+    + ToNaturalLanguage(graph)
+}
+
+enum TripleType {
+    MAIN
+    COMMON
+    REDUCED
+}
+
+class SemanticGraph {
+    - nodes: Map<NodeId, SemanticNode>
+    - triples: Map<TripleId, SemanticTriple>
+
+    + FindSubgraph(embedding, ...)
+    + AddNode(node)
+    + AddTriple(triple)
+    + RemoveNode(id)
+    + RemoveTriple(id)
+}
+
+SemanticGraph ----> SemanticSubgraph : generates
+
+
+class SemanticNode {
+    - id
+    - identifier: str
+
+    + MatchScore(node): float
+    + ToNaturalLanguage()
+}
+
+class IdentifierNode {
+    + MatchScore(node): float}
+}
+class NaturalLanguageNode {
+    - embedding
+    + MatchScore(node): float
+}
+
+SemanticNode <|-- IdentifierNode
+SemanticNode <|-- NaturalLanguageNode
+
+
+class SemanticTriple {
+    - id
+    - start: SemanticNode
+    - end: SemanticNode
+    - relation: str
+    - triple_type: TripleType
+
+    + IsValid(graph): bool
+    + ToNaturalLanguage()
+}
+SemanticTriple .r. TripleType
+SemanticTriple o-- SemanticNode
+SemanticGraph o-- SemanticNode
+SemanticGraph o-- SemanticTriple
+
+@enduml
