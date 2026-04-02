@@ -2,8 +2,8 @@
 [X] Update Class Diagram for vision (28/02/26)
 [X] See how to best store the trial_positioning.py (23/02/26)
 [X] Create working toml for project (23/02/26)
-[ ] Create branch on git for this
-[ ] Create Readme for project
+[X] Create branch on git for this
+[X] Create Readme for project
 ----------
 [X] Start Analyzing the Tabletop Engine Aspect (25/02/26)
 [x] See pygame

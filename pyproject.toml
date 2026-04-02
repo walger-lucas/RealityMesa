@@ -18,6 +18,7 @@ dependencies = [
     "sentence-transformers>=5.3.0,<5.4.0"
     "openai"
     "requests"
+    "spacy"
 ]
 
 [project.optional-dependencies]

@@ -40,6 +40,10 @@ class SemanticTriple:
     @property
     def bidirectional(self):
         return self.__bidirectional
+    
+    @property
+    def relation(self):
+        return self.__relation
 
     def SetId(self,id:int):
         if self.id==-1:
@@ -66,12 +70,12 @@ class SemanticTriple:
     def ToString(self, add_time = False,current_time: float |None = None):
         if current_time is None:
             current_time = time.monotonic()
-        string = f"{self.start.ToString()}, {self.__relation}, {self.end.ToString()}"
+        string = f"{self.start.ToString()}; {self.__relation}; {self.end.ToString()}"
         base = f"[{string}]" if self.bidirectional else f"({string})"
         sec = int(self.TimeLived(current_time))
         minutes = sec//60
         sec = sec%60
-        return base if not add_time else f"'born: {minutes}m{sec:02} ago' {base}"
+        return base if not add_time else f"'{minutes}m{sec:02}' {base}"
     
     def ToNaturalLanguage(self, add_time = False,current_time: float |None = None):
         if current_time is None:

@@ -28,7 +28,7 @@ you may run the following script
 
 python ./setup.py
 
-this will automatically download the model and correct llama-server
+this will automatically download the model and correct llama-server, it will also download the spacy portuguese pipeline
 
 ---
 This project utilizes the llama-server executable for Windows 64x CUDA 12.4, you may need to exchange the specific dlls and executables of llama-server on the corresponding directory for one that is compatible with your operating system and graphics card. Releases for these binary files, and github to build it by source code is [available on github](https://github.com/ggml-org/llama.cpp/releases).

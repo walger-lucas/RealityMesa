@@ -52,7 +52,7 @@ class SemanticSubgraph:
         for k in self.triples_age:
             self.triples_age[k] = age
 
-    def ToString(self,add_time:bool = False,current_time= None,show_score:bool = True):
+    def ToString(self,add_time:bool = False,current_time= None,show_score:bool = False,show_id:bool =False):
         if current_time is None:
             current_time = time.monotonic()
         text = ""
@@ -60,8 +60,10 @@ class SemanticSubgraph:
         for triple in triples:
             if triple is None:
                 continue
+            if show_id:
+                text+= f"{triple.id}|"
             if show_score:
-                text+= f"|{self.scores[triple.id]:.3}|"
+                text+= f"{self.scores[triple.id]:.3}|"
             text+= triple.ToString(add_time,current_time) + "\n"
         return text
 
@@ -169,7 +171,7 @@ class SemanticSubgraph:
         for t in mark_death:
             self.RemoveTriple(t)
 
-    def Join(self,subgraph:"SemanticSubgraph",k_repetition:float = 1.1,k_modifier=1.0):
+    def Join(self,subgraph:"SemanticSubgraph",k_repetition:float = 0.05,k_modifier=1.0):
         for triple in subgraph.triples:
             if triple in self.triples:
                 val = max(self.scores[triple],subgraph.scores[triple]*k_modifier)

@@ -85,6 +85,16 @@ def main():
 
     print("=== SETUP COMPLETE ===")
 
+import subprocess
+import sys
+
 
 if __name__ == "__main__":
+    subprocess.check_call([
+    sys.executable,
+    "-m",
+    "spacy",
+    "download",
+    "pt_core_news_lg"
+])
     main()
