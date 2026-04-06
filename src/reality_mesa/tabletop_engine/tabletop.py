@@ -1,3 +1,8 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from reality_mesa.nlp.context_manager.context_task import ContextTask
+
 from .tabletop_object import TabletopObject
 import pygame
 from reality_mesa.rendering import Camera
@@ -8,7 +13,7 @@ from reality_mesa.infra import CommandQueue, send_future_command, send_command
 from reality_mesa.vision.vision_manager import VisionManager, start_vision_task, GetCharucoBoard, CalibrateWithCharuco, StartCamera
 
 class Tabletop:
-    def __init__(self,image:pygame.Surface,tabletop_size:tuple[int,int], unit:str = "m",unit_size:float=1.5, cam_config = None):
+    def __init__(self,tt_queue:CommandQueue["Tabletop"],ctx_queue:CommandQueue[ContextTask],image:pygame.Surface,tabletop_size:tuple[int,int], unit:str = "m",unit_size:float=1.5, cam_config = None):
         self.__id_count = 0
         self.__objects: dict[int,TabletopObject] = {}
         self.__deltatime = 1.0
@@ -19,20 +24,19 @@ class Tabletop:
         self.tabletop_size = tabletop_size
         self.unit = unit
         self.unit_size = unit_size
-        self.tabletop_queue: CommandQueue[Tabletop] = CommandQueue()
+        self.tabletop_queue = tt_queue
         self.vision_queue: CommandQueue[VisionManager] = start_vision_task(self.tabletop_queue)
         self.calibrate = False
+        self.calibrate_img_asked = False
         self.calibration_image = None
         self.calibration_done = None
         self.last_camera:None |Camera = None
         self.remove_list = []
+        self.ctx_queue = ctx_queue
         if not cam_config:
             cam_config = {}
-        if (send_future_command(self.vision_queue,StartCamera(cam_config.pop("cam_id",0),cam_config.pop("fps",45),cam_config.pop("resolution",(1920,1080)))).result()):
-            self.Calibrate()
+        send_command(self.vision_queue,StartCamera(cam_config.pop("cam_id",0),cam_config.pop("fps",45),cam_config.pop("resolution",(1920,1080))))
         
-
-
 
     def __GetId(self):
         id = self.__id_count
@@ -115,14 +119,95 @@ class Tabletop:
         max_h = (surface.get_height()*0.8)//size_sqr[1]
         px_size = int(min(max_h,max_w))
 
-        if not self.calibration_image:
-            img = send_future_command(self.vision_queue,GetCharucoBoard(sqr_length_px=px_size,size_squares=size_sqr)).result()
-            self.calibration_image = pygame.surfarray.make_surface(img.swapaxes(0, 1))
-            self.calibration_done = send_future_command(self.vision_queue,CalibrateWithCharuco((px_size,px_size),None,max_timeout=15))
-        if self.calibration_done is not None and self.calibration_done.done():
-            self.calibration_image = None
-            self.calibrate = False
-        else:
+        if not self.future_img is None:
+            self.future_img = send_future_command(self.vision_queue,GetCharucoBoard(sqr_length_px=px_size,size_squares=size_sqr))
+        
+        try:
+            if self.calibration_image is None and self.future_img is not None and self.future_img.done():
+                if self.future_img.cancelled():
+                    self.future_img = None
+                    self.calibration_image = None
+                    self.calibration_done = None
+                    self.calibrate = False
+                    return
+                img = self.future_img.result()
+                self.calibration_image = pygame.surfarray.make_surface(img.swapaxes(0, 1))
+
+            if self.calibration_done is None and self.calibration_image is not None:
+                self.calibration_done = send_future_command(self.vision_queue,CalibrateWithCharuco((px_size,px_size),None,max_timeout=15))
+        
+            if self.calibration_done is not None and self.calibration_done.done():
+                if self.calibration_done.cancelled():
+                    self.future_img = None
+                    self.calibration_image = None
+                    self.calibration_done = None
+                    self.calibrate = False
+                    return
+                self.future_img = None
+                self.calibration_image = None
+                self.calibration_done = None
+                self.calibrate = False
+        except:
+                self.future_img = None
+                self.calibration_image = None
+                self.calibration_done = None
+                self.calibrate = False
+        
+        if self.calibration_image is not None:
             surface.blit(self.calibration_image,(px_size,px_size))
+        
+
+
+    # Will return None if error or no ptr and (([],[]),([],[])|None) for when there is a ptr, with none at the second if it is a point only. first [] is the right on, and second is the near
+    def GetPointerCtx(self,max_val:int = 5, distance_normalized:float = 2.0,max_distance_total:float = 8.0):
+        if ((ptr_man:=self.GetPointerManager()) is None or
+            self.last_camera is None or 
+            (ptr := ptr_man.GetFocus()) is None or
+            (tok_man :=self.GetTokenManager()) is None):
+            return None
+
+        dist = min(distance_normalized/self.last_camera.zoom,max_distance_total)
+
+        end_pos = ptr.point_end
+        end_right_on = tok_man.HitPointAll(end_pos)
+        end_right_on.sort(key=lambda k: (k.pos - end_pos).length())
+        end_right_on = [t.id for t in end_right_on]
+        end_right_on = end_right_on[:max_val]
+
+        end_near = tok_man.AllNear(end_pos,dist,end_right_on)
+        end_near.sort(key=lambda k: (k.pos - end_pos).length())
+        end_near = [t.id for t in end_near]
+        end_near = end_near[:max_val]
+
+        start_pos = ptr.point_start
+        if start_pos is None:
+            return PointerCtx(end_pos,end_right_on,end_near)
+        
+        start_right_on = tok_man.HitPointAll(start_pos)
+        start_right_on.sort(key=lambda k: (k.pos - start_pos).length())
+        start_right_on = [t.id for t in start_right_on]
+        start_right_on = start_right_on[:max_val]
+
+        start_near = tok_man.AllNear(start_pos,dist,start_right_on)
+        start_near.sort(key=lambda k: (k.pos - start_pos).length())
+        start_near = [t.id for t in start_near]
+        start_near = start_near[:max_val]
+        start = (start_right_on,start_near)
+        return PointerCtx(end_pos,end_right_on,end_near,
+                          start_pos,start_right_on,start_near)
+
+from dataclasses import dataclass
+
+@dataclass    
+class PointerCtx:
+    end: pygame.Vector2
+    end_right_on: list[int]
+    end_near: list[int]
+    start: pygame.Vector2 | None = None
+    start_right_on: list[int] |None = None
+    start_near: list[int] | None = None
+        
+    
+        
         
         

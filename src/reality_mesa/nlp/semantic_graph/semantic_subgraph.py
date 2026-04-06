@@ -154,6 +154,9 @@ class SemanticSubgraph:
         return triples
     
     def Prune(self,size) -> None:
+        remove_invalid =[t for t in self.triples if self.graph.GetTriple(t) is None]
+        for t in remove_invalid:
+            self.RemoveTriple(t)
         triple_score = [(t,self.scores[t]) for t in self.triples]
         triple_score.sort(key=lambda t: t[1])
         leave = max(0, len(self.triples)-size)

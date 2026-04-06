@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from reality_mesa.tabletop_engine.token import Token
+from reality_mesa.tabletop_engine.point_of_interest import PointOfInterest
 import pygame
 import math
 from collections import deque
@@ -13,6 +14,7 @@ class TokenManager:
         self.tabletop = tabletop
         self._pick_token:dict[int,int] = {} #picker_id to token
         self._pick_token_inverse: dict[int,int] = {} #token to picker_id
+        self._pois: dict[int, PointOfInterest]
 
     def AddToken(self,token:Token):
         if token.id not in self._tokens:
@@ -21,10 +23,24 @@ class TokenManager:
     def RemoveToken(self,token_id:int):
         if token_id in self._tokens:
             self._tokens.pop(token_id)
+
+    def AddPOI(self,poi:PointOfInterest):
+        if poi.id not in self._pois:
+            self._pois[poi.id] = poi
+
+    def RemovePOI(self,poi_id:int):
+        if poi_id in self._pois:
+            self._pois.pop(poi_id)
     
     def GetToken(self,token_id:int):
         if token_id in self._tokens:
             return self._tokens[token_id]
+        else:
+            return None
+        
+    def GetPOI(self,poi_id:int):
+        if poi_id in self._pois:
+            return self._pois[poi_id]
         else:
             return None
     
@@ -35,6 +51,28 @@ class TokenManager:
             if  tok.HitRect(rect) and tok.id not in disconsider:
                 return tok
         return None
+    
+    def HitPointAll(self,pt:pygame.Vector2,disconsider:list[int]|None = None):
+        hit:list[Token] = []
+        if disconsider == None:
+            disconsider = []
+        for tok in self._tokens.values():
+            if  tok.HitPoint(pt) and tok.id not in disconsider:
+                hit.append(tok)
+        return hit
+    
+    def AllNear(self,pt:pygame.Vector2,max_distance:float,disconsider:list[int]|None = None):
+        hit:list[Token|PointOfInterest] = []
+        if disconsider == None:
+            disconsider = []
+        for tok in self._tokens.values():
+            if (tok.pos - pt).length() < max_distance and tok.id not in disconsider:
+                hit.append(tok)
+
+        for poi in self._pois.values():
+            if (poi.pos - pt).length() < max_distance and poi.id not in disconsider:
+                hit.append(poi)
+        return hit
     
     def HitPoint(self,pt:pygame.Vector2,disconsider:list[int]|None = None):
         if disconsider == None:

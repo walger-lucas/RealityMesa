@@ -3,7 +3,8 @@ import os
 from sentence_transformers import SentenceTransformer
 from typing import TypeVar, Generic, Callable, Protocol
 import numpy as np
-
+import os
+import torch
 class HasGetSemanticEmbedding(Protocol):
     def GetSemanticEmbedding(self)-> np.ndarray:
         ...
@@ -21,7 +22,7 @@ class SentenceEmbedder:
     def __init__(self,model = None):
         if model==None:
             model=MODEL_PATH
-        self.model = SentenceTransformer(model,device="cpu")
+        self.model = SentenceTransformer(model)
 
     def embed(self,sentences, normalize = True)->np.ndarray:
         emb = self.model.encode(sentences=sentences)

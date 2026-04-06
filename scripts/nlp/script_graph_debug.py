@@ -3,6 +3,7 @@ import time
 import numpy as np
 from reality_mesa.nlp.semantic_graph import SemanticGraph,SemanticNode,NaturalLanguageNode,SemanticTriple, SemanticSubgraph, SemanticGraphExpandConfig
 from reality_mesa.nlp.semantic_graph.semantic_graph import GenerateTriples
+from reality_mesa.nlp.llm import start_llm_task
 
 emb = SentenceEmbedder()
 
@@ -13,7 +14,7 @@ tok3 = SemanticNode("tok3")
 tok4 = SemanticNode("tok4")
 tok5 = SemanticNode("tok5")
 tok6 = SemanticNode("tok6")
-
+queue,man,task = start_llm_task()
 # --- Grafo ---
 graph = SemanticGraph(allow_orphan_nodes=True)
 graph.AddNode(tok1)
@@ -34,5 +35,6 @@ embed = emb.embed(["amigo"])
 gv = SemanticSubgraph.Create(graph,embed)
 print(gv.ToString(show_score=True,show_id=True))
 
-
+man.run = False
+task.join()
 

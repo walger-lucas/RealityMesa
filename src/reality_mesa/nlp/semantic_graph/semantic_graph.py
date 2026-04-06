@@ -254,19 +254,20 @@ def GenerateTriples(graph:SemanticGraph,embedder:SentenceEmbedder,input:str):
             self.to_embed = []
             self.id = 0
         def add_to_embed(self,txt):
-            self.to_embed.append(txt)
-            id = self.id
-            self.id+=1
+            if txt not in self.to_embed:
+                self.to_embed.append(txt)
+                id = self.id
+                self.id+=1
+            else:
+                id = self.to_embed.index(txt)
             return id
     import re
-
     embed_id_store = embed_id()
 
     extract_pattern = r'([\(\[])([^()\[\]]+)([\)\]])(?:\|([^|]*)\|)?'
     split_pattern = r';(?=(?:[^"]*"[^"]*")*[^"]*$)'
 
     results = []
-
     for open_b, content, close_b, extra in re.findall(extract_pattern, string=input):
         parts = re.split(split_pattern, content)
 
@@ -298,7 +299,7 @@ def GenerateTriples(graph:SemanticGraph,embedder:SentenceEmbedder,input:str):
         new_nodes.append((start,end,relationship,bidir))
 
     embeddings = EmbeddingGenerate(embedder,embed_id_store.to_embed, lambda s,e:(s,e))
-
+    triples: list[SemanticTriple] = []
     for start, end, relationship, bidir in new_nodes:
         if isinstance(start,int):
             start= NaturalLanguageNode(embeddings[start][0],embeddings[start][1])
@@ -306,6 +307,8 @@ def GenerateTriples(graph:SemanticGraph,embedder:SentenceEmbedder,input:str):
             end= NaturalLanguageNode(embeddings[end][0],embeddings[end][1])    
         triple = SemanticTriple(relationship[0],embeddings[relationship[1]][1],start,end,bidir,born_time=time.monotonic())
         graph.AddTriple(triple)
+        triples.append(triple)
+    return triples
 
     
 

@@ -2,12 +2,17 @@ import pygame
 import sys
 from reality_mesa.rendering import Camera
 from reality_mesa.vision.vision_manager import StopVisionManager
-from reality_mesa.infra import send_command
+from reality_mesa.infra import send_command, CommandQueue
 import time
-from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfInterest
+from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfInterest,Tabletop
+from reality_mesa.nlp.context_manager.context_task import ContextTask, start_ctx_task
 pygame.init()
 
-tt, cam, screen = tabletop_read("C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
+tt_queue = CommandQueue[Tabletop]
+ctx_queue = CommandQueue[ContextTask]
+tt, cam, screen = tabletop_read(tt_queue,
+                                ctx_queue,
+                                "C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
 # Create window
 
 pygame.display.set_caption("Reality Mesa")

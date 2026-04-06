@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from reality_mesa.vision.hand_tracking import HandsManager,debug_hand_tracking
 from reality_mesa.vision.homography import CharucoCoordTransformManager
 from reality_mesa.infra import CommandQueue
+from reality_mesa.infra.command_queue import send_command
 from threading import Thread
 from reality_mesa.vision.hand_gesture_manager import HandGestureGenerator
 import cv2
@@ -10,6 +11,7 @@ import time
 import numpy as np
 if TYPE_CHECKING:
     from reality_mesa.tabletop_engine.tabletop import Tabletop
+from reality_mesa.tabletop_engine.tt_commands import VisionStarted
     
 
 
@@ -21,6 +23,7 @@ class VisionManager:
         self.hand_manager = HandsManager(45,1920,1920)
         self.cap: None | cv2.VideoCapture = None
         self.hand_gesture_generator = HandGestureGenerator(tabletop_queue)
+        self.tt_queue = tabletop_queue
     
     def process_commands(self):
         self.command_queue.process_commands(self)
@@ -41,8 +44,8 @@ class VisionManager:
         while time.monotonic()-start_time < max_time:
             ret, _ = self.cap.read()
             if ret:
-                return True
-        return False
+                send_command(self.tt_queue,VisionStarted())
+                return 
     
     def StopCamera(self):
         self.cap = None

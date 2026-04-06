@@ -4,6 +4,8 @@ from reality_mesa.rendering import Camera
 from .tabletop_object import TabletopObject
 import pygame
 import math
+from reality_mesa.infra import send_command
+from reality_mesa.nlp.context_manager.context_commands import AddToken, RemoveToken
 
 if TYPE_CHECKING:
     from .token_manager import TokenManager
@@ -32,11 +34,17 @@ class Token(TabletopObject):
         if self.tabletop:
             tok_manager = self.tabletop.GetTokenManager()
             tok_manager.AddToken(self)
+            send_command(self.tabletop.ctx_queue,
+                         AddToken(self.id,
+                                  f"tok{self.id}",
+                                  self.description))
 
     def Remove(self):
         if self.tabletop:
             tok_manager = self.tabletop.GetTokenManager()
             tok_manager.RemoveToken(self.id)
+            send_command(self.tabletop.ctx_queue,
+                         RemoveToken(self.id))
 
     def Draw(self, surface: pygame.Surface, camera: Camera):
         camera.DrawWorldSpriteCenter(surface,self.image,self.pos,self.size)

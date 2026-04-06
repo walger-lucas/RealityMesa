@@ -5,7 +5,7 @@ import signal
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model/Qwen_Qwen3-4B-Instruct-2507-Q5_K_M.gguf")
+MODEL_PATH = os.path.join(BASE_DIR, "model/Qwen3-4B-Instruct-2507-Q5_K_M.gguf")
 LLAMA_SERVER_PATH = os.path.join(BASE_DIR, "llama/llama-server.exe")
 
 class LlmManager:
@@ -19,10 +19,10 @@ class LlmManager:
                                   executable=executable_path,
                                     port=7666,
                                     ctx_size=ctx_size,        # or 16k if model supports it well
-                                    n_gpu_layers=999,
+                                    n_gpu_layers=-1,
                                     batch_size=512,
                                     ubatch_size=128,
-                                    kv_offload=True
+                                    kv_offload=False
                                     )
         self.run = True
         self.client = None
@@ -34,7 +34,11 @@ class LlmManager:
                 self.client = self.server.client
 
                 while self.run:
-                    self.command_queue.process_commands(self)
+                    try:
+                        command = self.command_queue.get(timeout=2)
+                        command.execute(self)
+                    except:
+                        ...
 
         except Exception as e:
             print("[LlmManager] Error:", e)

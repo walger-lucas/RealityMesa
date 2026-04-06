@@ -54,7 +54,7 @@ def load_tt_image(tt_image_path: str | None, image_folder: str, bg_color=None) -
 
     return image
 
-def tabletop_read(file):
+def tabletop_read(tt_queue,ctx_queue,file):
     with open(file, "r", encoding="utf-8") as f:
         data:dict = json.load(f)
     if not data:
@@ -88,7 +88,7 @@ def tabletop_read(file):
 
     
 
-    tt = Tabletop(tt_image,size,unit,unit_size,cam_config)
+    tt = Tabletop(tt_queue,ctx_queue,tt_image,size,unit,unit_size,cam_config)
 
     tokens:list[dict] = data.pop("tokens",[])
     for tok in tokens:
