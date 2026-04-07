@@ -1,22 +1,40 @@
+ROAD MAP TO TCC RELEASE
 
-[X] Update Class Diagram for vision (28/02/26)
-[X] See how to best store the trial_positioning.py (23/02/26)
-[X] Create working toml for project (23/02/26)
-[X] Create branch on git for this
-[X] Create Readme for project
-----------
-[X] Start Analyzing the Tabletop Engine Aspect (25/02/26)
-[x] See pygame
-[X] analyze structure of tokens, objects and places of interest (01/03/26)
-----------
-[X] Create Camera for Pygame
-[X] Create Sprite System
-[X] Create Token For Pygame
-[X] Create Function to find close to point
-[X] Create Function to find empty space
-[X] Create Function to fix to grid
------------
-[X] Create Line and point objects
-[X] Create a PointerManager
-[X] Create OneFinger Pointer Gesture
-[X] Create TwoFinger Pointer Gesture
+[x]pre-alpha-phase
+-> vision task and basic tabletop
+[x] v0.1.0-alpha
+-> development
+----- v0.2.0-alpha ------
+1. info de apontamento
+2. sistema de comandos
+
+
+----- v0.3.0-alpha ------
+3. task de comandos verbais sem o verbal
+
+----- v0.3.1-alpha ------
+4. comando de movimento por texto
+
+------ v0.3.2-alpha -----
+5. comando de apontamento por texto
+
+------ v0.4.0-alpha ----- 11/04/26
+6. atualização de triplas novas
+
+------ v0.4.1-alpha ------
+7. atualizacao de lns novas
+
+------ v0.5.0-alpha ------
+8. comandos verbais
+
+------- v0.6.0-alpha -----
+9. desfazer verbal e não verbal
+
+-------- v0.6.1-alpha -------
+10. comandos de transformação
+
+-------- v0.6.2-alpha ------- 21/04/26
+example clean and text basics
+-------- v0.7.0-beta -------
+testing and tacla showcase
+--------- v0.7.1-beta ...

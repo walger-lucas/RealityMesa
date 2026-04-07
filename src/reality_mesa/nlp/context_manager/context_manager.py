@@ -34,7 +34,7 @@ class ContextManager:
         self.not_processed = 0
         self.max_sent = max_sentences
         self.sent_list:deque[tuple[str,float]] = deque(maxlen=max_sentences)
-        self.ctx_triples :list[SemanticTriple] = []
+        self.pointer :PointerCtx | None = None
 
     def __extract_verb(self,doc:Span):
         root = next(t for t in doc if t.dep_ == "ROOT")
@@ -86,8 +86,6 @@ class ContextManager:
         subgraph.SetAge(now)
         subgraph.Join(self.last_subgraph,k_modifier=0.8)
         subgraph.OldAgeKill(90,now)
-        for t in self.ctx_triples:
-            subgraph.AddTriple(t,0.5)
         subgraph.Prune(self.max_triples_subgraph)
         self.last_subgraph = subgraph
         return subgraph, info
@@ -183,7 +181,9 @@ ex. 5m03 | Eu vou até ali.
     def AddElement(self,id_tt:int, id_str:str, description:str):
         self.AddCtxTabletop(id_str,id_tt)
         self.graph.AddNode(SemanticNode(id_str))
+        print(f"id:{id_str}\n{description}\n\n")
         out = GenerateTriplesDescription(self.llm_queue,description,id_str)
+        print(out)
         if out:
             GenerateTriples(self.graph,self.embedder,out)
     
@@ -196,60 +196,160 @@ ex. 5m03 | Eu vou até ali.
                 self.graph.RemoveNode(node.id)
 
     def UpdatePointers(self,ptrs:"PointerCtx | None"):
-        p_origin = "p_origem"
-        p_pointing = "p_apontado"
+        self.pointer = ptrs
 
-        node_org = self.graph.NodeInGraph((p_origin,False))
-        node_dest = self.graph.NodeInGraph((p_pointing,False))
-        if node_org is not None:
-            self.graph.RemoveNode(node_org.id)
-        if node_dest is not None: 
-            self.graph.RemoveNode(node_dest.id)
-        self.ctx_triples = []
-        if ptrs is None:
+    def GetLNContextStr(self,ctx:list[tuple[SemanticTriple,float]],add_subtitles:bool = True):
+        if len(ctx) == 0:
+            return str("")
+        subtitles = "INFORMAÇÕES QUE PODEM SER UTILIZADAS PARA O PROCESSAMENTO DE RELAÇÕES\n"
+        ctx.sort(key=lambda k: k[1],reverse=True)
+        phrases = '\n'.join([t.ToNaturalLanguage() for t,_ in ctx])
+        if add_subtitles:
+            return subtitles+phrases+"\n"
+        return phrases+"\n"
+    
+    def GetIdRelationsStr(self,ctx:list[tuple[SemanticTriple,float]],add_subtitles:bool = True):
+        if len(ctx) == 0:
+            return str("")
+        subtitles = "RELAÇÕES ENTRE ENTIDADES QUE PODEM SER UTILIZADAS NO FORMATO DE TRIPLAS RELACIONAIS\n"
+        ctx.sort(key=lambda k: k[1],reverse=True)
+        phrases = '\n'.join([t.ToString() for t,_ in ctx])
+        if add_subtitles:
+            return subtitles+phrases+"\n"
+        return phrases+"\n"
+    
+    def AddPtrToIdDict(self,id_dict:dict):
+        if self.pointer is None:
             return
         
-        base_triples = f"({p_pointing}; ser apontado por; \"usuario final\")\n({p_pointing}; ser; \"ponto ou local no espaço\")\n"
-        self.graph.AddNode(SemanticNode(p_pointing))
-        if ptrs.start_right_on is None:
-            base_triples += f"({p_pointing};ser provável; \"local destino em comandos\")\n"\
-                f"({p_pointing}; ser provável; \"local origem em comandos\")\n"\
-                f"({p_pointing}; provavelmente representar; \"pronome ele ou ela, este, isto, isso\")\n"\
-                f"({p_pointing}; provavelmente representar; \"palavras aquele, aquilo, esta, aquela, aqui, ate ali, etc\")\n"
-        else:
-            self.graph.AddNode(SemanticNode(p_origin))
-            base_triples += f"({p_pointing};ser provável; \"local destino em comandos\")\n"\
-                f"({p_origin}; ser provável; \"local origem em comandos\")\n"\
-                f"({p_pointing}; provavelmente representar; \"pronome ele ou ela, este, isto, isso\")\n"\
-                f"({p_pointing}; provavelmente representar; \"palavras aquele, aquilo, esta, aquela, daqui, etc\")\n"\
-                f"({p_origin}; provavelmente representar; \"pronome ele ou ela, este, isto, isso\")\n"\
-                f"({p_origin}; provavelmente representar; \"palavras aquele, aquilo, esta, aquela, daqui, até ali, etc\")\n"\
-                f"({p_origin}; ter sido apontado por; \"usuario final\")\n({p_origin}; ser; \"ponto ou local no espaço\")\n"\
-                f"({p_origin}; fazer uma reta até; {p_pointing})|um caminho ou reta entre uma origem e um destino|\n"
+        id_dict["p_apontado"] = {
+                "id":"p_apontado",
+                "caracteristicas": [],
+                "caracteristicas especiais":["Posição que está sendo apontada pelo usuário, o fim de uma reta de medição de destino."\
+                    " Frases que possuem textos como daqui até ali, até esse lugar, aquele lugar, até aqule ponto, até aqui, ou mova/crie por essa reta/linha, representam esse objeto."\
+                        " Outras entidades que falem sobre ponto de interesse de fim de caminho se referem a esta entidade."]
+            }
         
-        for n in ptrs.end_right_on:
-            tok = self.GetContextToken(n)
-            if tok is not None:
-                base_triples += f"({tok};exatamente em;{p_pointing})|estar muito próximo ao ponto ou local apontado|\n"
+        for tt_node in self.pointer.end_right_on:
+            key = self.GetContextToken(tt_node)
+            if key is None:
+                continue
+                
+            
+            if self.pointer.start is None:
+                txt = "Esta entidade tem muito alta possibilidade de representar a entidade movida, origem, ou o ponto de chegada quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse do comando, estando exatamente na posição de p_apontado"
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
+            else:
+                txt = "Esta entidade tem muito alta possibilidade de representar o ponto de chegada, ou destino do comando, quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse do comando, estando exatamente na posição de p_apontado"
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
         
-        for n in ptrs.end_near:
-            tok = self.GetContextToken(n)
-            if tok is not None:
-                base_triples += f"({tok};próximo a;{p_pointing})|estar próximo ou local apontado|\n"
+        for tt_node in self.pointer.end_near:
+            key = self.GetContextToken(tt_node)
+            if key is None:
+                continue
+            if self.pointer.start is None:
+                txt = "Esta entidade tem alta possibilidade de representar a entidade movida, origem, ou o ponto de chegada quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse do comando, estando próximo, mas não exatamente na posição de p_apontado"
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
+            else:
+                txt = "Esta entidade tem alta possibilidade de representar o ponto de chegada, ou destino do comando, quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse do comando, estando próximo, mas não exatamente na posição de p_apontado"
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
 
-        if(ptrs.start_right_on is not None):
-            for n in ptrs.start_right_on:
-                tok = self.GetContextToken(n)
-                if tok is not None:
-                    base_triples += f"({tok};exatamente em;{p_origin})|estar muito próximo ao ponto ou local apontado|\n"
-        if(ptrs.start_near is not None):
-            for n in ptrs.start_near:
-                tok = self.GetContextToken(n)
-                if tok is not None:
-                    base_triples += f"({tok};próximo a;{p_origin})|estar próximo ou local apontado|\n"
-        self.ctx_triples = GenerateTriples(self.graph,self.embedder,base_triples)
-        for t in self.ctx_triples:
-            self.last_subgraph.AddTriple(t,0.9)
-        self.last_subgraph.Prune(self.max_triples_subgraph)
+        if self.pointer.start_near is not None and self.pointer.start_right_on is not None:
+            for tt_node in self.pointer.start_right_on:
+                key = self.GetContextToken(tt_node)
+                if key is None:
+                    continue
+                txt = "Esta entidade tem muito alta possibilidade de representar a entidade movida ou origem do comando, quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse no inicio do movimento/comando, estando exatamente no ponto de inicio do comando."
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
+                  
+            for tt_node in self.pointer.start_near:
+                key = self.GetContextToken(tt_node)
+                if key is None:
+                    continue
+                txt ="Esta entidade tem alta possibilidade de representar a entidade movida ou origem do comando, quando representado como esse, isso, este, ele, ela, essa, desse, daqui, dali, e sujeitos ocultos, visto que o usuário apontou para sua posição como um ponto de interesse no inicio do movimento/comando, estando próximo, mas não exatamente no ponto de inicio do comando."
+                if key in id_dict:
+                    id_dict[key]["caracteristicas especiais"].append(txt)
+                else:
+                    id_dict[key] = {
+                        "id": key, 
+                        "caracteristicas": [],
+                        "caracteristicas especiais": [txt]
+                    }
+
+        
+    def GetIdDict(self,ctx:list[tuple[SemanticTriple,float]],ids:dict[int,SemanticNode]):
+        if len(ids) == 0:
+            return {}
+        
+        out= {}
+        for id in ids.values():
+            out[id.ToString()] = {
+                "id": id.ToString(), 
+                "caracteristicas": [],
+                "caracteristicas especiais": []
+            }
+        
+        ctx.sort(key= lambda k: k[1],reverse=True)
+        for triple, _ in ctx:
+            key = triple.start.ToString()
+            if key in out:
+                out[key]["caracteristicas"].append(triple.ToNaturalLanguage())
+        return out
+
+    def IdDictToString(self,id_dict:dict,add_subtitles:bool = True):
+        if len(id_dict) == 0:
+            return str("")
+        subtitles = "ENTIDADES VÁLIDAS E SUAS CARACTERÍSTICAS EM LINGUAGEM NATURAL\n"
+        phrases = ""
+        for val in id_dict.values():
+            phrases += str(object=val) + "\n" 
+        if add_subtitles:
+            return subtitles+phrases+"\n"
+        return phrases+"\n"
+    
+    def GetCtxStr(self, subtitles:bool= True,add_positional:bool = True):
+        ln, idrel, iddesc,ids = self.last_subgraph.DivideContext()
+        desc_dict = self.GetIdDict(iddesc,ids)
+        if add_positional:
+            self.AddPtrToIdDict(desc_dict)
+        return self.GetLNContextStr(ln,subtitles)+self.GetIdRelationsStr(idrel,subtitles)+self.IdDictToString(desc_dict,subtitles)
+
+        
+        
         
 

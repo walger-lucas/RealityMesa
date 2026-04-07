@@ -40,13 +40,16 @@ NÃO crie duas triplas que expressem a mesma informação com palavras diferente
 Use linguagem natural e curta no terceiro campo entre aspas
 Evite pronomes ambíguos — seja explícito
 SEPARE ADJETIVOS EM SUAS PRÓPRIAS TRIPLAS CASO POSSÍVEL.
+NUNCA DESCARTE UM ADJETIVO, SEMPRE CRIE UMA TRIPLA PARA REPRESENTÁ-LO.
+NUNCA DESCARTE CARACTERÍSTICAS CORPORAIS COMO COR DOS OLHOS, ESTATURA, FORÇA, FORMATO.
+TENTE MANTER AS PALAVRAS ORIGINAIS QUE DESCREVEM A ENTIDADE SE POSSÍVEL
+NUNCA REPITA TRIPLAS
 
 RELAÇÕES:
 Use apenas relações que forem necessárias
 NÃO force a criação de triplas para uma relação se não houver informação relevante
 Não confunda negativos, alguém pelado está sem roupa e não com, por exemplo.
 SEMPRE ADICIONE UMA RELAÇÃO DE NOME NO FORMATO (id, ser chamado de, nome) CASO FORNECIDO DE ALGUMA MANEIRA, NÃO CONFUNDA NOME COM SUBSTANTIVOS COMUNS.
-SEMPRE TENTE DIVIDIR ADJETIVOS CENTRAIS EM TRIPLAS PRÓPRIAS NORMALIZANDO AO MÁXIMO CADA STRING CRIADA.
 DESCARTE ARTIGOS INDEFINIDOS COMO UM OU UMA EM TRIPLAS DE RELAÇÃO SER.
 
 SEGURANÇA E NEUTRALIDADE:
@@ -86,16 +89,19 @@ Saída:
 
 Entrada:
 id: animal_3
-descrição: "um cachorro vermelho, chamado clifford. Ele possui um osso azul e olhos prateados."
+descrição: "um cachorro voador, fraco e vermelho, chamado clifford. Ele possui um osso azul e olhos prateados, e usa um chapéu."
 
 Saída:
 (animal_3; ser; \"cachorro\")
 (animal_3; ter cor; \"vermelho\")
+(animal_3; ser; \"fraco\")
 (animal_3; ser chamado de; \"clifford\")
 (animal_3; ter; \"osso azul\")
 (animal_3; ter; \"olhos prateados\")
+(animal_3; vestir; \"chapéu\")
+(animal_3; conseguir; \"voar\")
 
 Agora processe: 
 """
-    val = ask_llm_and_wait(queue,prompt,user_prompt=f"id: {id}\ndescrição: \"{description}\"",max_token=1024,timeout=5)
+    val = ask_llm_and_wait(queue,prompt,user_prompt=f"id: {id}\ndescrição: \"{description}\"",max_token=1024,timeout=20)
     return val

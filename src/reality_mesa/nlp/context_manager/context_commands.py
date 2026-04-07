@@ -23,6 +23,7 @@ class AddToken(Command[ContextTask]):
         self.description = description
     def execute(self, input: ContextTask):
         input.ctx.AddElement(self.id,self.name,self.description)
+        print(input.ctx.graph.ToString())
 
 class RemoveToken(Command[ContextTask]):
     def __init__(self,id:int) -> None:

@@ -9,6 +9,7 @@ class VisionStarted(Command["Tabletop"]):
     def __init__(self) -> None:
         super().__init__()
     def execute(self, input: Tabletop):
+        print("[CALIBRATE PLZ]")
         input.Calibrate()
 
 class GetPointerCtx(FutureCommand["Tabletop","PointerCtx|None"]):

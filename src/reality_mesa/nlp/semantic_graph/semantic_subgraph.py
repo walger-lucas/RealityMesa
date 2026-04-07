@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import time
 
 from . import SemanticGraph
-from . import SemanticTriple
+from . import SemanticTriple,SemanticNode,NaturalLanguageNode
 from ..sentence_embedding import EmbeddingCompare
 
 
@@ -201,3 +201,28 @@ class SemanticSubgraph:
         sg._GetFrontier()
 
         return sg
+    
+    #returns triples of type lnxln, idxid, idxln, and all nodes thata are not natural language
+    def DivideContext(self):
+        ln_ctx: list[tuple[SemanticTriple,float]] = []
+        id_relation_ctx: list[tuple[SemanticTriple,float]] = []
+        id_ctx: list[tuple[SemanticTriple,float]] = []
+        ids: dict[int,SemanticNode] = {}
+
+        for t in self.triples:
+            triple = self.graph.GetTriple(t)
+            if triple is None:
+                continue
+            if isinstance(triple.start,NaturalLanguageNode):
+                if isinstance(triple.end,NaturalLanguageNode):
+                    ln_ctx.append((triple,self.scores.get(t,0.0)))
+            else:
+                if triple.start.id not in ids:
+                    ids[triple.start.id] = triple.start
+
+                if isinstance(triple.end,NaturalLanguageNode):
+                    id_ctx.append((triple,self.scores.get(t,0.0)))
+                else:
+                    id_relation_ctx.append((triple,self.scores.get(t,0.0)))
+        
+        return ln_ctx, id_relation_ctx, id_ctx, ids

@@ -13,13 +13,13 @@
 
     "tokens": [
         {
-            "description": "Goblin alto e forte, com uma grande cicatriz no peito, seu nome é José e tem olhos verdes, assim como sua pele. Ele é careca, e tem orelhas pontudas",
+            "description": "Goblin que é alto e forte, com uma grande cicatriz no peito, seu nome é José e tem olhos verdes, assim como sua pele. Ele é careca, e tem orelhas pontudas",
             "size": [2,2],
             "pos": [10,4],
             "img":"file.png"
         },
         {
-            "description": "Goblin baixo e fraco, com uma grande cicatriz no peito, seu nome é Guilherme e tem olhos azuis, assim como sua pele. Ele é careca, e tem orelhas pontudas",
+            "description": "Goblin que é baixo e fraco, com uma grande cicatriz no peito, seu nome é Guilherme e tem olhos azuis, assim como sua pele. Ele é careca, e tem orelhas pontudas",
             "size": [1,1],
             "pos": [4,9],
             "img":"gob.png"

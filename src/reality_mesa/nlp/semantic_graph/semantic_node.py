@@ -29,7 +29,7 @@ class SemanticNode:
         return str(self.node_identifier)
     
     def ToNaturalLanguage(self):
-        return self.ToString()
+        return str("")
     
 
 class NaturalLanguageNode(SemanticNode):
@@ -50,7 +50,7 @@ class NaturalLanguageNode(SemanticNode):
         return f"\"{str(self.node_identifier)}\""
     
     def ToNaturalLanguage(self):
-        return super().ToString()
+        return str(self.node_identifier)
         
         
 

@@ -216,12 +216,6 @@ class SemanticGraph:
             rel_triple = ' '.join([nodes[0],nodes[1]])
         return (node_output,(nodes[1],rel_triple),bidirectional)
 
-        
-        
-            
-        
-
-    
     def NodeInGraph(self,node:tuple[str,bool]):
         text,certainly_str = node
         node_id = None
@@ -236,6 +230,10 @@ class SemanticGraph:
         if certainly_str and str_text in self.__tag_find:
             node_str = self.GetNode(self.__tag_find[str_text])
         return node_str
+    
+
+
+
             
     
 #is text

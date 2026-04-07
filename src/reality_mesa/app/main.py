@@ -8,8 +8,9 @@ from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfIn
 from reality_mesa.nlp.context_manager.context_task import ContextTask, start_ctx_task
 pygame.init()
 
-tt_queue = CommandQueue[Tabletop]
-ctx_queue = CommandQueue[ContextTask]
+tt_queue: CommandQueue[Tabletop] = CommandQueue()
+ctx_queue: CommandQueue[ContextTask] = CommandQueue()
+ctx, ctx_task = start_ctx_task(tt_queue,ctx_queue)
 tt, cam, screen = tabletop_read(tt_queue,
                                 ctx_queue,
                                 "C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
@@ -19,8 +20,6 @@ pygame.display.set_caption("Reality Mesa")
 
 clock = pygame.time.Clock()
 running = True
-
-
 
 while running:
     # --- Event handling ---
@@ -47,13 +46,13 @@ while running:
 
     # --- Update logic ---
     # (nothing yet)
+
     tt.Update()
 
     # --- Draw ---
     screen.fill((30, 30, 30))  # background color
 
     tt.Draw(screen,cam)
-
     if(tt.calibrate):
         tt.DoCalibration(screen)
 
@@ -61,6 +60,8 @@ while running:
     clock.tick(60)  # limit to 60 FPS
 
 send_command(tt.vision_queue,StopVisionManager())
+ctx.Stop()
+ctx_task.join()
 time.sleep(0.5)
 pygame.quit()
 sys.exit()

@@ -51,6 +51,8 @@ while(text!=""):
             if sem is not None:
                 print(sem.ToString(show_score=True))
             print(f" {time.monotonic()-start}s to process---------------------")
+    elif(text=="k"):
+        print(ctx.GetCtxStr())
     elif(text=="u"):
         print("add ponto destino? y/n")
         text = input()

@@ -27,7 +27,7 @@ class Tabletop:
         self.tabletop_queue = tt_queue
         self.vision_queue: CommandQueue[VisionManager] = start_vision_task(self.tabletop_queue)
         self.calibrate = False
-        self.calibrate_img_asked = False
+        self.future_img = None
         self.calibration_image = None
         self.calibration_done = None
         self.last_camera:None |Camera = None
@@ -118,8 +118,8 @@ class Tabletop:
         max_w = (surface.get_width()*0.8)//size_sqr[0]
         max_h = (surface.get_height()*0.8)//size_sqr[1]
         px_size = int(min(max_h,max_w))
-
-        if not self.future_img is None:
+        
+        if self.future_img is None:
             self.future_img = send_future_command(self.vision_queue,GetCharucoBoard(sqr_length_px=px_size,size_squares=size_sqr))
         
         try:

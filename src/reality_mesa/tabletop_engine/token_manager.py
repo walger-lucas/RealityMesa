@@ -14,7 +14,7 @@ class TokenManager:
         self.tabletop = tabletop
         self._pick_token:dict[int,int] = {} #picker_id to token
         self._pick_token_inverse: dict[int,int] = {} #token to picker_id
-        self._pois: dict[int, PointOfInterest]
+        self._pois: dict[int, PointOfInterest] = {}
 
     def AddToken(self,token:Token):
         if token.id not in self._tokens:
