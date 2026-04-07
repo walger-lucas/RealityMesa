@@ -1,11 +1,12 @@
 import pygame
 import sys
-from reality_mesa.rendering import Camera
 from reality_mesa.vision.vision_manager import StopVisionManager
 from reality_mesa.infra import send_command, CommandQueue
-import time
 from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfInterest,Tabletop
 from reality_mesa.nlp.context_manager.context_task import ContextTask, start_ctx_task
+from reality_mesa.nlp.vocal_commands import start_voice_task
+import time
+
 pygame.init()
 
 tt_queue: CommandQueue[Tabletop] = CommandQueue()
@@ -15,7 +16,7 @@ tt, cam, screen = tabletop_read(tt_queue,
                                 ctx_queue,
                                 "C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
 # Create window
-
+voice_manager,voice_task = start_voice_task(tt_queue,ctx_queue)
 pygame.display.set_caption("Reality Mesa")
 
 clock = pygame.time.Clock()
@@ -60,8 +61,13 @@ while running:
     clock.tick(60)  # limit to 60 FPS
 
 send_command(tt.vision_queue,StopVisionManager())
+
+voice_manager.Stop()
+voice_task.join()
+
 ctx.Stop()
 ctx_task.join()
+
 time.sleep(0.5)
 pygame.quit()
 sys.exit()

@@ -48,3 +48,9 @@ class AddSent(FutureCommand[ContextTask,dict]):
     def _run(self, input: ContextTask):
         _,info =  input.ctx.AddSentence(self.sent)
         return info
+    
+class UpdateCtx(Command[ContextTask]):
+    def __init__(self) -> None:
+        super().__init__()
+    def execute(self, input: ContextTask):
+        ... #TODO
