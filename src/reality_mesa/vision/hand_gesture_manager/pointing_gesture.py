@@ -31,7 +31,6 @@ class PointCommand(Command["Tabletop"]):
             else:
                 point = Pointer(posfixed,None)
             input.AddObject(point)
-            input.GetPointerManager().AddPointer(point)
             input.GetPointerManager().PickPointer(self.id,point,self.position)
             
         elif self.event == 1:

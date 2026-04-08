@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .tabletop import Tabletop,PointerCtx
 from reality_mesa.infra import Command, FutureCommand
+from .pointer import Pointer
 
 class VisionStarted(Command["Tabletop"]):
     def __init__(self) -> None:
@@ -48,3 +49,38 @@ class MoveCommand(Command["Tabletop"]):
             return
         
         move_tok.Move(end_pos,True,False)
+
+class LineCommand(Command["Tabletop"]):
+    def __init__(self, start_id:int|pygame.Vector2, end_id: int|pygame.Vector2):
+        super().__init__()
+        self.start_id = start_id
+        self.end_id = end_id
+    def execute(self, input: Tabletop):
+        tok_man = input.GetTokenManager()
+        if tok_man is None:
+            return
+        if isinstance(self.end_id,pygame.Vector2):
+            end_pos = self.end_id
+        elif (tok := tok_man.GetToken(self.end_id)) is not None:
+            end_pos = tok.pos
+        elif (poi := tok_man.GetPOI(self.end_id)) is not None:
+            end_pos = poi.pos
+        else:
+            return
+        if isinstance(self.start_id,pygame.Vector2):
+            start_pos = self.start_id
+        elif (tok := tok_man.GetToken(self.start_id)) is not None:
+            start_pos = tok.pos
+        elif (poi := tok_man.GetPOI(self.start_id)) is not None:
+            start_pos = poi.pos
+        else:
+            return
+        
+        if start_pos!=end_pos:
+            point = Pointer(end_pos,start_pos)
+        else:
+            point = Pointer(end_pos,None)
+        input.AddObject(point)
+        point.StartEndPointer(15)
+        
+        

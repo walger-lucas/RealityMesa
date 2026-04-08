@@ -94,7 +94,7 @@ class PointerManager:
         posfixed = self.tabletop.FixToGrid(pygame.Vector2(1,1),pos)
         ptr.MoveEnd(point_end=posfixed)
 
-    def PickEnd(self,picker_id:int,position:pygame.Vector2,time_to_end:float = 5.0):
+    def PickEnd(self,picker_id:int,position:pygame.Vector2|None,time_to_end:float = 5.0):
         if not self.tabletop.last_camera:
             return
         if picker_id not in self._pick_pointer:
@@ -105,10 +105,10 @@ class PointerManager:
         ptr = self.GetPointer(val)
         if not ptr:
             return
-        
-        pos = self.tabletop.last_camera.Screen2World(position)
-        posfixed = self.tabletop.FixToGrid(pygame.Vector2(1,1),pos)
-        ptr.MoveEnd(point_end=posfixed)
+        if position is not None:
+            pos = self.tabletop.last_camera.Screen2World(position)
+            posfixed = self.tabletop.FixToGrid(pygame.Vector2(1,1),pos)
+            ptr.MoveEnd(point_end=posfixed)
         ptr.StartEndPointer(time_to_end)
 
 
