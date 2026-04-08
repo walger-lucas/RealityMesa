@@ -115,14 +115,10 @@ class UndoPointing(UndoCommand):
 
     def Undo(self) -> bool:
         ptr_man = self.tt.GetPointerManager()
-        print("undo poitn1")
         if ptr_man is None:
             return False
         ptr = ptr_man.GetPointer(self.point_id)
-        print("undo poitn2")
         if ptr is None:
             return False
-        print("undo poitn3")
         self.tt.RemoveObject(ptr.id)
-        print("undo poitn4")
         return True

@@ -83,7 +83,7 @@ class HandData:
 
 class HandTracker:
     __FINGER_ACTIVATION = {
-        FingerEnum.INDEX_FINGER : (0.5,0.6,0.67),
+        FingerEnum.INDEX_FINGER : (0.5,0.6,0.60),
         FingerEnum.MIDDLE_FINGER : (0.5,0.6,0.67),
         FingerEnum.RING_FINGER : (0.5,0.6,0.67),
         FingerEnum.LITTLE_FINGER : (0.5,0.6,0.67),
