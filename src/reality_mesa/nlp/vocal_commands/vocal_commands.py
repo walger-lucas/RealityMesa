@@ -16,4 +16,4 @@ class VocalCommands:
 vocal_commands_registry:list[tuple[type[VocalCommands],int]] = []
 def vocal_command(cmd: type[VocalCommands],priority:int=0):
     vocal_commands_registry.append((cmd,priority))
-    vocal_commands_registry.sort(key=lambda k:k[1])
+    vocal_commands_registry.sort(key=lambda k:k[1],reverse=True)

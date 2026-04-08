@@ -1,3 +1,4 @@
 from .hand_gesture_generator import HandGestureGenerator
 from .pinch_gesture import PinchGesture
 from .pointing_gesture import PointGestureOneFinger, PointGestureTwoFingers
+from .undo_gesture import UndoGesture

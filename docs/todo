@@ -7,25 +7,21 @@ ROAD MAP TO TCC RELEASE
 ----- v0.2.0-alpha ------
 1. info de apontamento
 2. sistema de comandos
-3. task de comandos verbais sem o verbal (07/04)
+3. task de comandos verbais sem o verbal 
 ----- v0.3.0-alpha ------
-4. comando de movimento por texto (08/04)
-5. comando de apontamento por texto (09/04)
+4. comando de movimento por texto 
+5. comando de apontamento por texto 
 --------------- DONE ----------------------------------
-
------- v0.5.0-alpha ------
+9. desfazer verbal e não verbal
+v0.2.2q
 8. comandos verbais
+v0.3.0 ----------------- means we are up to date with old software (tomorrow)
 
------- v0.4.0-alpha ----- 11/04/26
+------ v0.3.0-alpha ----- 11/04/26
 6. atualização de triplas novas
 
------- v0.4.1-alpha ------
+------ v0.3.1-alpha ------
 7. atualizacao de lns novas
-
-
-
-------- v0.6.0-alpha -----
-9. desfazer verbal e não verbal
 
 -------- v0.6.1-alpha -------
 10. comandos de transformação

@@ -81,6 +81,48 @@ class LineCommand(Command["Tabletop"]):
         else:
             point = Pointer(end_pos,None)
         input.AddObject(point)
+        input.undo_manager.AddUndo(UndoPointing(input,point.id))
         point.StartEndPointer(15)
         
+
+class UndoTabletopCommand(Command["Tabletop"]):
+    def execute(self, input: "Tabletop"):
+        input.undo_manager.Undo()
+
+from .undo_command import UndoCommand
+
+class UndoMovement(UndoCommand):
+    def __init__(self,tabletop:"Tabletop",tok_id:int,pos:pygame.Vector2):
+        self.tt = tabletop
+        self.tok_id = tok_id
+        self.pos = pos
+
+    def Undo(self) -> bool:
+        tok_man = self.tt.GetTokenManager()
+        if tok_man is None:
+            return False
+        tok = tok_man.GetToken(self.tok_id)
+        if tok is None:
+            return False
         
+        tok.Move(self.pos,True,True,False)
+        return True
+
+class UndoPointing(UndoCommand):
+    def __init__(self,tabletop:"Tabletop",point_id:int):
+        self.tt = tabletop
+        self.point_id = point_id
+
+    def Undo(self) -> bool:
+        ptr_man = self.tt.GetPointerManager()
+        print("undo poitn1")
+        if ptr_man is None:
+            return False
+        ptr = ptr_man.GetPointer(self.point_id)
+        print("undo poitn2")
+        if ptr is None:
+            return False
+        print("undo poitn3")
+        self.tt.RemoveObject(ptr.id)
+        print("undo poitn4")
+        return True

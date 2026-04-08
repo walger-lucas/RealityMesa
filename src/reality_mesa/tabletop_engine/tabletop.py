@@ -8,6 +8,7 @@ import pygame
 from reality_mesa.rendering import Camera
 from reality_mesa.tabletop_engine.token_manager import TokenManager
 from reality_mesa.tabletop_engine.pointer_manager import PointerManager
+from reality_mesa.tabletop_engine.undo_manager import UndoManager
 import time
 from reality_mesa.infra import CommandQueue, send_future_command, send_command
 from reality_mesa.vision.vision_manager import VisionManager, start_vision_task, GetCharucoBoard, CalibrateWithCharuco, StartCamera
@@ -33,6 +34,7 @@ class Tabletop:
         self.last_camera:None |Camera = None
         self.remove_list = []
         self.ctx_queue = ctx_queue
+        self.undo_manager = UndoManager()
         if not cam_config:
             cam_config = {}
         send_command(self.vision_queue,StartCamera(cam_config.pop("cam_id",0),cam_config.pop("fps",45),cam_config.pop("resolution",(1920,1080))))

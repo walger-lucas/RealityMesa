@@ -33,7 +33,7 @@ class ContextTask:
             except Empty:
                 ...
             except Exception as e:
-                raise  # or log it
+                raise 
         self.ctx.llm_manager.run = False
         self.ctx.llm_task.join()
 

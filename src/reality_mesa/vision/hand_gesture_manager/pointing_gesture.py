@@ -7,6 +7,7 @@ from reality_mesa.vision.hand_tracking.hand_data import DistanceNorm
 if TYPE_CHECKING:
     from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.tabletop_engine.pointer import Pointer
+from reality_mesa.tabletop_engine.tt_commands import UndoPointing
 import pygame
 import numpy as np
 import cv2
@@ -31,6 +32,7 @@ class PointCommand(Command["Tabletop"]):
             else:
                 point = Pointer(posfixed,None)
             input.AddObject(point)
+            input.undo_manager.AddUndo(UndoPointing(input,point.id))
             input.GetPointerManager().PickPointer(self.id,point,self.position)
             
         elif self.event == 1:

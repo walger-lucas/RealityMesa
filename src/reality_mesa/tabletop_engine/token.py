@@ -6,6 +6,7 @@ import pygame
 import math
 from reality_mesa.infra import send_command
 from reality_mesa.nlp.context_manager.context_commands import AddToken, RemoveToken
+from .tt_commands import UndoMovement
 
 if TYPE_CHECKING:
     from .token_manager import TokenManager
@@ -17,6 +18,8 @@ class Token(TabletopObject):
         self.pos = pos
         self.size = size
         self.description = description
+
+        self.undo_when_moved = True
 
         self.moving = False
         self.target_end_position = pos
@@ -55,7 +58,8 @@ class Token(TabletopObject):
             camera.DrawWorldElipse(surface,self.target_end_position,pygame.Vector2(0.2,0.2),0,(255,255,255,127))
         
 
-    def Move(self,end_pos:pygame.Vector2, auto_end = False, allow_overlap = True):
+    def Move(self,end_pos:pygame.Vector2, auto_end = False, allow_overlap = True,undo_when_moved = True):
+        self.undo_when_moved = undo_when_moved
         if not self.movable:
             return
         
@@ -102,8 +106,8 @@ class Token(TabletopObject):
             if self.auto_end_move and (self.pos - self.target_end_position).length() < 0.05:
                 self.pos = self.target_end_position
                 self.moving = False
-                
-                #register move command
+                if self.undo_when_moved and self.tabletop is not None:
+                    self.tabletop.undo_manager.AddUndo(UndoMovement(self.tabletop,self.id,self.start_position.copy()))
 
     def GetRect(self):
         tok_rect = pygame.FRect(self.pos-self.size/2,self.size)
