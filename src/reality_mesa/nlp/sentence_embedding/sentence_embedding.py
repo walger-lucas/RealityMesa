@@ -22,7 +22,7 @@ class SentenceEmbedder:
     def __init__(self,model = None):
         if model==None:
             model=MODEL_PATH
-        self.model = SentenceTransformer(model)
+        self.model = SentenceTransformer(model,device="cpu")
 
     def embed(self,sentences, normalize = True)->np.ndarray:
         emb = self.model.encode(sentences=sentences)

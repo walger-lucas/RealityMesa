@@ -16,9 +16,12 @@ dependencies = [
     "opencv-contrib-python>=4.9,<5",
     "pygame-ce"
     "sentence-transformers>=5.3.0,<5.4.0"
-    "openai"
-    "requests"
-    "spacy"
+    "openai==2.30"
+    "requests==2.33.0"
+    "spacy==3.8.14"
+    "torch>=2.9.1"
+    "torchaudio>=2.9.1"
+    "realtimestt>=0.3.104"
 ]
 
 [project.optional-dependencies]

@@ -1,3 +1,4 @@
 [submodule "src/reality_mesa/nlp/sentence_embedding/models/portuguese-bge-m3"]
 	path = src/reality_mesa/nlp/sentence_embedding/models/portuguese-bge-m3
 	url = https://huggingface.co/nonola/portuguese-bge-m3
+	

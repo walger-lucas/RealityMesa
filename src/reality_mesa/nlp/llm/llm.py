@@ -9,7 +9,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "model/Qwen3-4B-Instruct-2507-Q5_K_M.gguf")
 LLAMA_SERVER_PATH = os.path.join(BASE_DIR, "llama/llama-server.exe")
 
 class LlmManager:
-    def __init__(self, model_path = None, executable_path = None,ctx_size = 4096) -> None:
+    def __init__(self, model_path = None, executable_path = None,ctx_size = 3072) -> None:
         if model_path is None:
             model_path = MODEL_PATH
         if executable_path is None:
@@ -22,7 +22,7 @@ class LlmManager:
                                     n_gpu_layers=-1,
                                     batch_size=512,
                                     ubatch_size=128,
-                                    kv_offload=False
+                                    kv_offload=True,
                                     )
         self.run = True
         self.client = None

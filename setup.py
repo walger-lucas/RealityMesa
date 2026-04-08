@@ -97,4 +97,13 @@ if __name__ == "__main__":
     "download",
     "pt_core_news_lg"
 ])
+    subprocess.check_call([
+    sys.executable,
+    "pip", 
+    "install", 
+    "torch==2.9.1+cu128", 
+    "torchaudio==2.9.1", 
+    "--index-url", 
+    "https://download.pytorch.org/whl/cu128",
+])
     main()

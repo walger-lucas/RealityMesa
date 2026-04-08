@@ -3,13 +3,13 @@ from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.nlp.context_manager.context_task import ContextTask
 from reality_mesa.nlp.context_manager.context_commands import UpdatePointers,UpdateCtx,SegmentText,AddSent
 from .vocal_commands import vocal_commands_registry
-
+from RealtimeSTT import AudioToTextRecorder
 class VocalCommandManager():
-    def __init__(self,tt_queue:CommandQueue[Tabletop],ctx_queue:CommandQueue[ContextTask]) -> None:
+    def __init__(self,tt_queue:CommandQueue[Tabletop],ctx_queue:CommandQueue[ContextTask],recorder:AudioToTextRecorder) -> None:
         self.tt_queue = tt_queue
         self.ctx_queue = ctx_queue
         self.run = True
-
+        self.recorder = recorder
     def ProcessText(self,txt:str):
         send_command(self.ctx_queue,UpdatePointers())
         try:
@@ -26,18 +26,24 @@ class VocalCommandManager():
             send_command(self.ctx_queue,UpdateCtx())
 
     def Run(self):
+        
         while(self.run):
-            txt = input("Falas:")
-            self.ProcessText(txt)
+            txt = self.recorder.text()
+            if(self.run):
+                if isinstance(txt,str):
+                    print("falante: " + txt)
+                    self.ProcessText(txt)
     def Stop(self):
         self.run = False
+        self.recorder.shutdown()
 
         
 from threading import Thread
 
 def start_voice_task(tt_queue: CommandQueue["Tabletop"],ctx_queue: CommandQueue["ContextTask"])->tuple[VocalCommandManager,Thread]:
-    manager = VocalCommandManager(tt_queue,ctx_queue)
-    task = Thread(target=voice_task,args=(manager,),daemon=False)
+    recorder = AudioToTextRecorder(language="pt",model='small')
+    manager = VocalCommandManager(tt_queue,ctx_queue,recorder)
+    task = Thread(target=voice_task,args=(manager,),daemon=True)
     task.start()
     return manager, task
 
