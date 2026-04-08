@@ -14,15 +14,14 @@ class VocalCommandManager():
         send_command(self.ctx_queue,UpdatePointers())
         try:
             sents = send_future_command(self.ctx_queue,SegmentText(txt)).result(15.0)
-            
             for sent in sents:
                 info = send_future_command(self.ctx_queue,AddSent(sent)).result(15.0)
                 for cmd,_ in vocal_commands_registry:
                     if cmd.activate(sent,info,self.tt_queue,self.ctx_queue):
                         cmd.execute(sent,info,self.tt_queue,self.ctx_queue)
                         break
-        except:
-            ...
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
         finally:
             send_command(self.ctx_queue,UpdateCtx())
 

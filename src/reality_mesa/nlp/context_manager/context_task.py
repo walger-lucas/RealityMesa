@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from queue import Empty
 
 if TYPE_CHECKING:
     from reality_mesa.tabletop_engine.tabletop import PointerCtx, Tabletop
@@ -29,8 +30,10 @@ class ContextTask:
             try:
                 command = self.ctx_queue.get(timeout=2)
                 command.execute(self)
-            except:
-                        ...
+            except Empty:
+                ...
+            except Exception as e:
+                raise  # or log it
         self.ctx.llm_manager.run = False
         self.ctx.llm_task.join()
 

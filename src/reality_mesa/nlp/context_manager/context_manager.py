@@ -132,7 +132,7 @@ class ContextManager:
 
         return subtitles + text if add_subtitles else text
     
-    def GetSentencesStr(self,add_subtitle:bool = True, divide:bool = False):
+    def GetSentencesStr(self,add_subtitle:bool = True, divide:bool = False,add_time:bool = True):
         now = time.monotonic()
         
         while len(self.sent_list)>0:
@@ -146,7 +146,10 @@ class ContextManager:
 tempo em minutos desde que a frase foi falada | frase
 ex. 5m03 | Eu vou até ali.
 4m50 | Não, desisto, vou até aqui mesmo.\n"""
-        phrases =[f"{int((now-t)/60)}m{int(now-t)%60:02} | {phrase}" for phrase,t in self.sent_list]
+        if add_time:
+            phrases =[f"{int((now-t)/60)}m{int(now-t)%60:02} | {phrase}" for phrase,t in self.sent_list]
+        else:
+            phrases =[phrase for phrase,t in self.sent_list]
         phrases.reverse()
         p_done = '\n'.join(phrases[:len(self.sent_list)-self.not_processed])
         p_not_done = '\n'.join(phrases[len(self.sent_list)-self.not_processed:])

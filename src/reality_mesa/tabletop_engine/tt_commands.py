@@ -21,3 +21,30 @@ class GetPointerCtx(FutureCommand["Tabletop","PointerCtx|None"]):
 
     def _run(self, input: Tabletop) -> None | PointerCtx:
         return input.GetPointerCtx(self.max_near,self.norm_distance,self.max_distance)
+    
+
+import pygame
+class MoveCommand(Command["Tabletop"]):
+    def __init__(self, target_id:int, pos_id: int|pygame.Vector2):
+        super().__init__()
+        self.target_id = target_id
+        self.pos_id = pos_id
+    def execute(self, input: Tabletop):
+        tok_man = input.GetTokenManager()
+        if tok_man is None:
+            return
+        if isinstance(self.pos_id,pygame.Vector2):
+            end_pos = self.pos_id
+        elif (tok := tok_man.GetToken(self.pos_id)) is not None:
+            end_pos = tok.pos
+        elif (poi := tok_man.GetPOI(self.pos_id)) is not None:
+            end_pos = poi.pos
+        else:
+            return
+        
+        if (tok := tok_man.GetToken(self.target_id)) is not None:
+            move_tok = tok
+        else:
+            return
+        
+        move_tok.Move(end_pos,True,False)
