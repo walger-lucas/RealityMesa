@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Token(TabletopObject):
-    def __init__(self, description:str , pos: pygame.Vector2, size: pygame.Vector2, image: pygame.Surface):
+    def __init__(self, description:str , pos: pygame.Vector2, size: pygame.Vector2, image: pygame.Surface,depth:int=0):
         self.image = image
         self.pos = pos
         self.size = size
@@ -32,6 +32,7 @@ class Token(TabletopObject):
         self.min_speed = 10
         self.max_time_move = 1.5
         self.linear_speed = 0.0
+        self.__depth = depth
 
     def Start(self):
         if self.tabletop:
@@ -122,3 +123,6 @@ class Token(TabletopObject):
         tok_rect = self.GetRect()
         return tok_rect.collidepoint(pt)
     
+    @property
+    def depth(self):
+        return self.__depth

@@ -47,10 +47,11 @@ class TokenManager:
     def HitRect(self,rect:pygame.FRect,disconsider:list[int]|None = None):
         if disconsider == None:
             disconsider = []
+        out: Token | None = None
         for tok in self._tokens.values():
-            if  tok.HitRect(rect) and tok.id not in disconsider:
-                return tok
-        return None
+            if  (out is None or out.depth < tok.depth) and tok.HitRect(rect) and tok.id not in disconsider:
+                out = tok
+        return out
     
     def HitPointAll(self,pt:pygame.Vector2,disconsider:list[int]|None = None):
         hit:list[Token] = []
@@ -77,10 +78,11 @@ class TokenManager:
     def HitPoint(self,pt:pygame.Vector2,disconsider:list[int]|None = None):
         if disconsider == None:
             disconsider = []
+        out: Token | None = None
         for tok in self._tokens.values():
-            if tok.HitPoint(pt) and tok.id not in disconsider:
-                return tok
-        return None
+            if  (out is None or out.depth < tok.depth) and tok.HitPoint(pt) and tok.id not in disconsider:
+                out = tok
+        return out
     
     def FindEmpty(self,org:pygame.Vector2,dest:pygame.Vector2,size:pygame.Vector2,size_dest:pygame.Vector2 = pygame.Vector2(1,1),disconsider:list[int] | None=None):
         #find direction between origin and destination
