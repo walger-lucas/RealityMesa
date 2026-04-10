@@ -50,6 +50,11 @@ class Tabletop:
         self.__objects[obj.id] = obj
         obj.Start()
 
+    def GetObject(self,id:int):
+        if id in self.__objects:
+            return self.__objects[id]
+        return None
+
     def RemoveObject(self,obj_id:int):
         if obj_id in self.__objects:
             self.remove_list.append(obj_id)

@@ -25,6 +25,17 @@ class AddToken(Command[ContextTask]):
         input.ctx.AddElement(self.id,self.name,self.description)
         print(input.ctx.graph.ToString())
 
+
+class AddTriples(Command[ContextTask]):
+    def __init__(self,id:int,name:str,triples:str) -> None:
+        super().__init__()
+        self.id = id
+        self.name = name
+        self.triples = triples
+    def execute(self, input: ContextTask):
+        input.ctx.AddElementTriples(self.id,self.name,self.triples)
+        print(input.ctx.graph.ToString())
+
 class RemoveToken(Command[ContextTask]):
     def __init__(self,id:int) -> None:
         super().__init__()

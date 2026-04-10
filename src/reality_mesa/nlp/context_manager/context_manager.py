@@ -190,6 +190,12 @@ ex. 5m03 | Eu vou até ali.
         if out:
             GenerateTriples(self.graph,self.embedder,out)
     
+
+    def AddElementTriples(self,id_tt:int, id_str:str, triples:str):
+        self.AddCtxTabletop(id_str,id_tt)
+        self.graph.AddNode(SemanticNode(id_str))
+        GenerateTriples(self.graph,self.embedder,triples)
+
     def RemoveElement(self,id_tt:int):
         if id_tt in self.tabletop_to_context:
             name = self.tabletop_to_context.pop(id_tt)

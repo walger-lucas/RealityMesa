@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class Token(TabletopObject):
-    def __init__(self, description:str , pos: pygame.Vector2, size: pygame.Vector2, image: pygame.Surface,depth:int=0):
+    def __init__(self, description:str , pos: pygame.Vector2, size: pygame.Vector2, image: pygame.Surface|None,depth:int=0):
         self.image = image
         self.pos = pos
         self.size = size
@@ -51,7 +51,8 @@ class Token(TabletopObject):
                          RemoveToken(self.id))
 
     def Draw(self, surface: pygame.Surface, camera: Camera):
-        camera.DrawWorldSpriteCenter(surface,self.image,self.pos,self.size)
+        if self.image is not None:
+            camera.DrawWorldSpriteCenter(surface,self.image,self.pos,self.size)
 
     def DrawUnderlay(self, surface: pygame.Surface, camera: Camera):
         if self.movable and self.moving:
