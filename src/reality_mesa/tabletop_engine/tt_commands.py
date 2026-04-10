@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from reality_mesa.tabletop_engine.tabletop import Tabletop
-
 if TYPE_CHECKING:
     from .tabletop import Tabletop,PointerCtx
 from reality_mesa.infra import Command, FutureCommand
@@ -136,17 +134,3 @@ class UndoTokenCreate(UndoCommand):
         self.tt.RemoveObject(self.id)
         return True
     
-from .wall_token import wallTypeRegistry, WallToken
-class CreateWall(Command["Tabletop"]):
-    def __init__(self, start_pos:pygame.Vector2,end_pos:pygame.Vector2,type:str) -> None:
-        super().__init__()
-        self.start = start_pos
-        self.end = end_pos
-        self.type = type
-
-    def execute(self, input: Tabletop):
-        if self.type not in wallTypeRegistry:
-            return
-        tok = WallToken(self.start,self.end,wallTypeRegistry[self.type])
-        input.AddObject(tok)
-        input.undo_manager.AddUndo(UndoTokenCreate(input,tok.id))

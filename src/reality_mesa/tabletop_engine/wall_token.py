@@ -1,14 +1,16 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from reality_mesa.infra import send_command
+from reality_mesa.infra import send_command, Command
 from reality_mesa.nlp.context_manager.context_commands import RemoveToken, AddTriples
 from pygame import Surface, Vector2
 from .token import Token, TabletopObject
 from .point_of_interest import PointOfInterest
 from reality_mesa.rendering import Camera
 from dataclasses import dataclass
+from .tt_commands import UndoTokenCreate
 if TYPE_CHECKING:
     from .token_manager import TokenManager
+    from .tabletop import Tabletop
 
 
 class WallTokenBorder(Token):
@@ -81,8 +83,8 @@ class WallToken(PointOfInterest):
                               0)
         
     def Draw(self, surface: Surface, camera: Camera):
-        camera.DrawWorldElipse(surface,self.start.pos,(1,1),0,self.triple_type.COLOR)
-        camera.DrawWorldElipse(surface,self.end.pos,(1,1),0,self.triple_type.COLOR)
+        camera.DrawWorldElipse(surface,self.start.pos,Vector2(1,1),0,self.triple_type.COLOR)
+        camera.DrawWorldElipse(surface,self.end.pos,Vector2(1,1),0,self.triple_type.COLOR)
 
 _BASE_WALL_TRIPLES = """({wall};ser;"muralha")\n
                         ({wall};ser;"muro")\n"""
@@ -128,3 +130,19 @@ wallTypeRegistry = {
     "gelo": WallType(["gelo","congelante","congelada"],(116,148,167),0.9),
     "pedra": WallType(["pedra"],(167,167,167),0.95)
 }
+
+class CreateWall(Command["Tabletop"]):
+    def __init__(self,type:str) -> None:
+        super().__init__()
+        self.type = type
+
+    def execute(self, input: "Tabletop"):
+        if self.type not in wallTypeRegistry:
+            return
+        
+        focus = input.GetPointerManager().GetFocus()
+        if focus is None or focus.point_start is None:
+            return
+        tok = WallToken(focus.point_start,focus.point_end,wallTypeRegistry[self.type])
+        input.AddObject(tok)
+        input.undo_manager.AddUndo(UndoTokenCreate(input,tok.id))
