@@ -23,17 +23,23 @@
             "size": [1,1],
             "pos": [4,9],
             "img":"gob.png"
+        },
+        {
+            "description": "Um owlbear. Um urso coruja, uma monstruosidade animal, que junta as caracteristicas ferozes de um urso, e a visão de uma coruja, sendo do dobro do tamanho de um urso normal.",
+            "size": [3,3],
+            "pos": [8,15],
+            "img":"owlbear.webp"
         }
 
     ],
 
     "poi": [
         {
-            "description": "Local Qualquer 1",
+            "description": "Montanha alta e flamejante",
             "pos": [3,17]
         },
         {
-            "description": "Local qualquer 2",
+            "description": "Lago profundo",
             "pos": [20,12]
 
         }

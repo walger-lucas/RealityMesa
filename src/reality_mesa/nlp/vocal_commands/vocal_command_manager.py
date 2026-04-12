@@ -41,7 +41,7 @@ class VocalCommandManager():
 from threading import Thread
 
 def start_voice_task(tt_queue: CommandQueue["Tabletop"],ctx_queue: CommandQueue["ContextTask"])->tuple[VocalCommandManager,Thread]:
-    recorder = AudioToTextRecorder(language="pt",model='small')
+    recorder = AudioToTextRecorder(language="pt",model='medium')
     manager = VocalCommandManager(tt_queue,ctx_queue,recorder)
     task = Thread(target=voice_task,args=(manager,),daemon=True)
     task.start()
