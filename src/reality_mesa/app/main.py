@@ -13,11 +13,11 @@ def main():
     ctx_queue: CommandQueue[ContextTask] = CommandQueue()
     
     ctx, ctx_task = start_ctx_task(tt_queue,ctx_queue)
-    tt, cam, screen = tabletop_read(tt_queue,
+    tt, cam, screen,stt = tabletop_read(tt_queue,
                                     ctx_queue,
                                     "C:/Users/Administrador/Documents/Projetos/TTRPGMESA/tabletops/tabletop.json")
     # Create window
-    voice_manager,voice_task = start_voice_task(tt_queue,ctx_queue)
+    voice_manager,voice_task = start_voice_task(tt_queue,ctx_queue,stt)
     pygame.display.set_caption("Reality Mesa")
 
     clock = pygame.time.Clock()

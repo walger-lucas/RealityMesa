@@ -7,7 +7,7 @@ from reality_mesa.tabletop_engine.wall_token import wallTypeRegistry,CreateWall
 from .vocal_commands import vocal_command, VocalCommands
 
 class WallVocalCommand(VocalCommands):
-    __ACTION_VERB_LEMMA = ("transformar")
+    __ACTION_VERB_LEMMA = ("transformar","transforme")
     def __init__(self) -> None:
         super().__init__()
     @staticmethod

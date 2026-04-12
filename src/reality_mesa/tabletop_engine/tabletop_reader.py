@@ -111,4 +111,4 @@ def tabletop_read(tt_queue,ctx_queue,file):
     
     
     
-    return tt, cam, screen
+    return tt, cam, screen, data.pop("stt_help",[])

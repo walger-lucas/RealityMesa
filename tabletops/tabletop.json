@@ -6,42 +6,94 @@
     },
     "display_id":1,
     "image_folder": "./images",
-    "size":[25,25],
+    "size":[16,16],
     "unit":"m",
     "unit_size":1.5,
-    "img":"back.jpeg",
+    "img":"map.png",
+    "stt_help":["corvo","coelho","pescador","andarilho","raposa","lagoa"],
 
     "tokens": [
         {
-            "description": "Goblin que é alto e forte, com uma grande cicatriz no peito, seu nome é José e tem olhos verdes, assim como sua pele. Ele é careca, e tem orelhas pontudas",
-            "size": [2,2],
-            "pos": [10,4],
-            "img":"file.png"
-        },
-        {
-            "description": "Goblin que é baixo e fraco, com uma grande cicatriz no peito, seu nome é Guilherme e tem olhos azuis, assim como sua pele. Ele é careca, e tem orelhas pontudas",
+            "description": "Um corvo preto.",
             "size": [1,1],
-            "pos": [4,9],
-            "img":"gob.png"
+            "pos": [10,4],
+            "img":"corvo.png"
         },
         {
-            "description": "Um owlbear. Um urso coruja, uma monstruosidade animal, que junta as caracteristicas ferozes de um urso, e a visão de uma coruja, sendo do dobro do tamanho de um urso normal.",
-            "size": [3,3],
-            "pos": [8,15],
-            "img":"owlbear.webp"
+            "description": "Um coelho veloz. Pelagem marrom e olhos pretos.",
+            "size": [1,1],
+            "pos": [14,15],
+            "img":"coelho.png"
+        },
+        {
+            "description": "Um pescador. Tem uma vara de pesca e está descalço. Chama-se Pedro.",
+            "size": [2,2],
+            "pos": [2.5,8.5],
+            "img":"pescador.png"
+        },
+        {
+            "description": "Uma criança. Estudante, com livros nas mãos. Chama-se Alberto. Filha ded um pescador",
+            "size": [1,1],
+            "pos": [6,11],
+            "img":"criança.png"
+        },
+        {
+            "description": "Um andarilho e vagante com roupas chiques. Tem um chapéu formal e anda despreocupado. Chama-se João.",
+            "size": [2,2],
+            "pos": [13.5,2.5],
+            "img":"vagante.png"
+        },
+        {
+            "description": "Uma raposa raivosa, com muita fome.",
+            "size": [1,1],
+            "pos": [8,12],
+            "img":"raposa.png"
+        },
+        {
+            "description": "Um cachorro preto fofo, gosta de brincar com bolinhas e ama crianças.",
+            "size": [1,1],
+            "pos": [6,9],
+            "img":"cachorro.png"
         }
 
     ],
 
     "poi": [
         {
-            "description": "Montanha alta e flamejante",
-            "pos": [3,17]
+            "description": "Base de uma Montanha, ponto mais baixo dela",
+            "pos": [4,6]
         },
         {
-            "description": "Lago profundo",
-            "pos": [20,12]
-
+            "description": "Lagoa cheia de peixes",
+            "pos": [2,12]
+        },
+        {
+            "description": "Entrada de uma caverna na montanha.",
+            "pos": [2,3]
+        },
+        {
+            "description": "Topo da Montanha, pico mais alto",
+            "pos": [6,1]
+        },
+        {
+            "description": "Planalto na montanha, primeiro andar da montanha.",
+            "pos": [7,4]
+        },
+        {
+            "description": "Floresta ao sul, muito densa. Onde os coelhos moram, em suas tocas.",
+            "pos": [15,14]
+        },
+        {
+            "description": "Árvore morta, onde corvos gostam de ficar",
+            "pos": [10,9]
+        },
+        {
+            "description": "Floresta de pinheiros ao norte.",
+            "pos": [13,2]
+        },
+        {
+            "description": "Cabana de madeira do pescador e seu filho",
+            "pos": [5,11]
         }
 
     ]

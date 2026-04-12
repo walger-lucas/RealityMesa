@@ -59,9 +59,21 @@ class AddSent(FutureCommand[ContextTask,dict]):
     def _run(self, input: ContextTask):
         _,info =  input.ctx.AddSentence(self.sent)
         return info
+
     
 class UpdateCtx(Command[ContextTask]):
-    def __init__(self) -> None:
+    def __init__(self,update:bool=False) -> None:
         super().__init__()
+        self.update = update
+        
     def execute(self, input: ContextTask):
-        ... #TODO
+        if self.update:
+            ln, idrel, iddesc,ids = input.ctx.last_subgraph.DivideContext()
+            desc_dict = input.ctx.GetIdDict(iddesc,ids)
+            input.ctx.AddPtrToIdDict(desc_dict)
+            entities = input.ctx.IdDictToString(desc_dict)
+            input.ctx.RemoveContext(entities)
+            input.ctx.AddTripleContext(entities)
+            input.ctx.AddDictContext(ln)
+        input.ctx.not_processed = 0
+        ...

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from reality_mesa.tabletop_engine.tabletop import PointerCtx
-from ..llm import start_llm_task
+from ..llm import start_llm_task, ask_llm_and_wait
 from ..semantic_graph import SemanticGraph,SemanticNode,SemanticSubgraph, SemanticGraphExpandConfig,GenerateTriples,SemanticTriple
 from ..sentence_embedding import SentenceEmbedder,EmbeddingGenerate
 import spacy
@@ -12,9 +12,8 @@ from spacy.tokens import Token
 import time
 from collections import deque
 from .description_triple_generator import GenerateTriplesDescription
-#TODO THIS CLASS MUST HAVE ACCESS TO TABLETOP? IT IS THE NLP MANAGER, MUST ALLOW AND DEAMBIGUIATE TOKENS AND POIs but should not generate them
-
-
+from .prompts import *
+import ast
 class ContextManager:
     def __init__(self,max_sentences=6, max_sent_age = 90,max_triples_subgraph:int = 35):
         self.graph = SemanticGraph(allow_orphan_nodes=True,min_similarity=0.55)
@@ -158,14 +157,14 @@ ex. 5m03 | Eu vou até ali.
             return p_done+"\n"+p_not_done
         
         if divide and len(p_done)>0:
-            subtitle+="----- FRASES JÁ PROCESSADAS, USE COMO CONTEXTO, NÃO CRIE A PARTIR DELAS ----\n"
+            subtitle+="\n----- FRASES JÁ PROCESSADAS, USE APENAS COMO CONTEXTO, NÃO CRIE OU REMOVA A PARTIR DELAS ----\n"
             subtitle+=p_done
         if divide and len(p_not_done)>0:
-            subtitle+="----- FRASES NÃO PROCESSADAS, USE COMO CONTEXTO E CRIE NOVAS TRIPLAS A PARTIR DELAS ----\n"
+            subtitle+="\n----- FRASES NÃO PROCESSADAS, CRIE E REMOVA APENAS A PARTIR DELAS ----\n"
             subtitle+=p_not_done
 
         if divide and len(phrases)>0:
-            subtitle+="------- FIM DE FRASES CONTEXTUAIS ---------\n"
+            subtitle+="\n------- FIM DE FRASES CONTEXTUAIS ---------\n"
         
         if divide:
             return subtitle
@@ -357,6 +356,56 @@ ex. 5m03 | Eu vou até ali.
         if add_positional:
             self.AddPtrToIdDict(desc_dict)
         return self.GetLNContextStr(ln,subtitles)+self.GetIdRelationsStr(idrel,subtitles)+self.IdDictToString(desc_dict,subtitles)
+
+    def RemoveContext(self, entities:str):
+        user_prompt = f"Entidades:\n{entities}"\
+            f"\nTriplas:\n{self.GetSubgraphStr(False,False,True)}"\
+            f"\n{self.GetSentencesStr(True,True,False)}"
+        out = ask_llm_and_wait(self.llm_queue,REMOVAL_PROPMT,user_prompt)
+        if out is None:
+            return
+
+        try: 
+            remove = ast.literal_eval(out)
+            if not isinstance(remove,list):
+                return
+        except:
+            return;
+
+        for i in remove:
+            print("REMOVED:\n")
+            if isinstance(i,int):
+                tt = self.graph.GetTriple(i)
+                if tt is not None:
+                    print(tt.ToString()+"\n")
+                self.graph.RemoveTriple(i)
+
+    def AddTripleContext(self, entities:str):
+        user_prompt = f"Entidades:\n{entities}"\
+            f"\nTriplas:\n{self.GetSubgraphStr(False,False,True)}"\
+            f"\n{self.GetSentencesStr(True,True,False)}"
+
+        out = ask_llm_and_wait(self.llm_queue,ADDITION_PROMPT,user_prompt)
+        if out is None:
+            return
+        print("\nADDED\n")
+        print(out)
+        self.AddToGraph(out)
+
+    def AddDictContext(self,ctx:list[tuple[SemanticTriple,float]]):
+        ctx.sort(key=lambda k: k[1])
+        triples = '\n'.join([t.ToString() for t,s in ctx])
+        user_prompt = f"Triplas do Dicionário Anteriores:\n{triples}"\
+            f"\n{self.GetSentencesStr(True,True,False)}"
+
+        out = ask_llm_and_wait(self.llm_queue,DICTIONARY_PROMPT,user_prompt)
+        if out is None:
+            return
+        print("\nDICTONARY\n")
+        print(out)
+        self.AddToGraph(out)
+
+        
 
         
         

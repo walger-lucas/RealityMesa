@@ -91,3 +91,5 @@ local_settings.py
 # Temporary files
 *.tmp
 *.swp
+
+tabletops/images/map.png

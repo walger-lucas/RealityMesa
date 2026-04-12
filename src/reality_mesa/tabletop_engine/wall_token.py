@@ -41,9 +41,9 @@ class WallToken(PointOfInterest):
             tok_manager.AddPOI(self)
             self.tabletop.AddObject(self.start)
             self.tabletop.AddObject(self.end)
-            tok_start_name = f"border{self.start.id}"
-            tok_end_name = f"border{self.end.id}"
-            wall_name = f"wall{self.id}"
+            tok_start_name = f"tok{self.start.id}"
+            tok_end_name = f"tok{self.end.id}"
+            wall_name = f"tok{self.id}"
             triples = self.triple_type.GetTriples(wall_name,tok_start_name,tok_end_name)
             send_command(self.tabletop.ctx_queue,
                          AddTriples(self.id,wall_name,triples[0]))

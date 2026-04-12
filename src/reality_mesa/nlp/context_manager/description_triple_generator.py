@@ -14,7 +14,7 @@ Cada tripla deve ter exatamente o formato:
 
 Relações são verbos, preposições e representantes curtos de relação como
 
-ser, ter, usar, estar, estar sem, estar com, ser amigo de, ser inimigo de, ser famoso por, ser chamado de, etc. NUNCA TENDO MAIS QUE 5 palavras.
+ser, ter, usar, estar, estar sem, estar com, ser moradia de, ser amigo de, ser inimigo de, ser famoso por, ser chamado de, etc. NUNCA TENDO MAIS QUE 5 palavras.
 Entrada:
 
 Você receberá:

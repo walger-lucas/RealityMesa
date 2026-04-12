@@ -20,7 +20,7 @@ class PointOfInterest(TabletopObject):
             tok_manager.AddPOI(self)
             send_command(self.tabletop.ctx_queue,
                          AddToken(self.id,
-                                  f"p_poi{self.id}",
+                                  f"tok{self.id}",
                                   self.description))
     def Remove(self):
         if self.tabletop:
