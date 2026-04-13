@@ -38,3 +38,11 @@ pip install torch==2.5.1+cu121 torchaudio==2.5.1 --index-url https://download.py
 ---
 This project utilizes the llama-server executable for Windows 64x CUDA 12.4, you may need to exchange the specific dlls and executables of llama-server on the corresponding directory for one that is compatible with your operating system and graphics card. Releases for these binary files, and github to build it by source code is [available on github](https://github.com/ggml-org/llama.cpp/releases).
 ---
+
+
+# ARTWORKS
+
+a map.png is missing as its art is currently created using assets from [forgotten-adventures](https://www.forgotten-adventures.net/), its copyrights prohibit it from being embedded on vtt software. This art will be remade in a simpler way for the repository.
+The presentation will keep using the older map, it just wont be available through the repo.
+
+The token art is made out of public domain art from Lehmann's illustrations, based on Hey's fables ( Paul Horst-Schulze and Otto Richard Bossert 1911) accessed via [artvee](https://artvee.com/wall-charts/lehmanns-illustrations-based-on-heys-fables/).
