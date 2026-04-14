@@ -1,0 +1,8 @@
+class VerbalCommands {
+  + <<abstract>>>{static} activate()
+  + <<abstract>>>{static} execute()
+}
+
+VerbalCommands <|-- LineVebalCommand
+VerbalCommands <|-- UndoVerbalCommand
+VerbalCommands <|-- MoveVerbalCommand

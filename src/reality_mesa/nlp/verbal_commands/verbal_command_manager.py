@@ -2,10 +2,10 @@ from reality_mesa.infra import Command, CommandQueue,send_command,send_future_co
 from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.nlp.context_manager.context_task import ContextTask
 from reality_mesa.nlp.context_manager.context_commands import UpdatePointers,UpdateCtx,SegmentText,AddSent
-from .vocal_commands import vocal_commands_registry
+from .verbal_commands import verbal_commands_registry
 from RealtimeSTT import AudioToTextRecorder
 from spacy.tokens import Span
-class VocalCommandManager():
+class VerbalCommandManager():
     def __init__(self,tt_queue:CommandQueue[Tabletop],ctx_queue:CommandQueue[ContextTask],recorder:AudioToTextRecorder) -> None:
         self.tt_queue = tt_queue
         self.ctx_queue = ctx_queue
@@ -18,7 +18,7 @@ class VocalCommandManager():
             sents = send_future_command(self.ctx_queue,SegmentText(txt)).result(15.0)
             for sent in sents:
                 info = send_future_command(self.ctx_queue,AddSent(sent)).result(15.0)
-                for cmd,_ in vocal_commands_registry:
+                for cmd,_ in verbal_commands_registry:
                     if cmd.activate(sent,info,self.tt_queue,self.ctx_queue):
                         cmd.execute(sent,info,self.tt_queue,self.ctx_queue)
                         break
@@ -50,17 +50,17 @@ class VocalCommandManager():
         
 from threading import Thread
 
-def start_voice_task(tt_queue: CommandQueue["Tabletop"],ctx_queue: CommandQueue["ContextTask"],stt_help:list[str])->tuple[VocalCommandManager,Thread]:
+def start_voice_task(tt_queue: CommandQueue["Tabletop"],ctx_queue: CommandQueue["ContextTask"],stt_help:list[str])->tuple[VerbalCommandManager,Thread]:
 
     
     prompt = "Palavras relevantes: \n" + 'mover\nandar\nfazer linha\nmova o\nmovo\ntransformar\nfaça reta\n'+ '\n'.join(stt_help)
     print(prompt)
     recorder = AudioToTextRecorder(language="pt",model='medium',initial_prompt=prompt
                                    ,initial_prompt_realtime=prompt,post_speech_silence_duration=0.2)
-    manager = VocalCommandManager(tt_queue,ctx_queue,recorder)
+    manager = VerbalCommandManager(tt_queue,ctx_queue,recorder)
     task = Thread(target=voice_task,args=(manager,),daemon=True)
     task.start()
     return manager, task
 
-def voice_task(manager:VocalCommandManager):
+def voice_task(manager:VerbalCommandManager):
     manager.Run() 

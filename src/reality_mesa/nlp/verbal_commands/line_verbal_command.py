@@ -5,7 +5,7 @@ from reality_mesa.nlp.context_manager.context_task import ContextTask
 from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.tabletop_engine.tt_commands import LineCommand
 from reality_mesa.nlp.llm import ask_llm_and_wait
-from .vocal_commands import vocal_command, VocalCommands
+from .verbal_commands import verbal_command, VerbalCommands
 import json
 
 PROMPT_LINE ="""Você é um sistema de Extração de Conexão Linear com Ancoragem em Entidades.
@@ -128,7 +128,7 @@ ULTIMAS FRASES PARA SEREM UTILIZADAS COMO CONTEXTO
 frase atual:
 """
 
-class LineVocalCommand(VocalCommands):
+class LineVocalCommand(VerbalCommands):
     __ACTION_VERB_LEMMA = ("medir","meçar","meçer","ligar","conectar")
     __CREATE_VERB_LEMMA = ("criar","fazer","façar")
     
@@ -149,7 +149,7 @@ class LineVocalCommand(VocalCommands):
                                     str(sent.text),
                                     str(PROMPT_LINE)))
 
-vocal_command(LineVocalCommand,9)
+verbal_command(LineVocalCommand,9)
 
 class LineCommandCtx(Command[ContextTask]):
     def __init__(self, tt_queue:CommandQueue[Tabletop],text:str,prompt:str) -> None:

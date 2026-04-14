@@ -1,0 +1,23 @@
+@startuml
+
+abstract class HandGesture {
+ - PRIORITY
+ - TIME_TO_START
+  +StopCommand()
+  + <<abstract>> GestureTest()
+  +<<abstract>> Start()
+  +<<abstract>> Update()
+  +<<abstract>> End()
+}
+
+class HandGestureGenerator {
+  +Update(hands)
+}
+
+HandGestureGenerator --> HandGesture
+
+HandGesture <|-- PinchGesture
+HandGesture <|-- PointGesture
+HandGesture <|-- UndoGesture
+
+@enduml

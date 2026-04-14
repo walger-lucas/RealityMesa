@@ -5,7 +5,7 @@ from reality_mesa.nlp.context_manager.context_task import ContextTask
 from reality_mesa.tabletop_engine.tabletop import Tabletop
 from reality_mesa.tabletop_engine.tt_commands import MoveCommand
 from reality_mesa.nlp.llm import ask_llm_and_wait
-from .vocal_commands import vocal_command, VocalCommands
+from .verbal_commands import verbal_command, VerbalCommands
 import json
 
 PROMPT_MOVE ="""Você é um sistema de Extração de Movimento com Ancoragem em Entidades.
@@ -87,13 +87,13 @@ ULTIMAS FRASES PARA SEREM UTILIZADAS COMO CONTEXTO
 frase atual:
 """
 
-class MoveVocalCommand(VocalCommands):
+class MoveVerbalCommand(VerbalCommands):
     LEMMA = ("morrer","mover","movor","movar","movir","andar","andor","ander","correr","corrar","corror","voar","ir","fugir","planar","caminhar","galopar")
     def __init__(self) -> None:
         super().__init__()
     @staticmethod
     def activate(sent: Span, info: dict, tt_queue: CommandQueue[Tabletop], ctx_queue: CommandQueue[ContextTask]) -> bool:
-        if info["acao"] is not None and info["acao"].lemma_.lower() in MoveVocalCommand.LEMMA:
+        if info["acao"] is not None and info["acao"].lemma_.lower() in MoveVerbalCommand.LEMMA:
             return True
         if(len(sent)>1 and sent[0].text.lower() in  ("mova","movo","mover")):
             return True
@@ -105,7 +105,7 @@ class MoveVocalCommand(VocalCommands):
                                     str(sent.text),
                                     str(PROMPT_MOVE)))
 
-vocal_command(MoveVocalCommand,10)
+verbal_command(MoveVerbalCommand,10)
 
 class MoveCommandCtx(Command[ContextTask]):
     def __init__(self, tt_queue:CommandQueue[Tabletop],text:str,prompt:str) -> None:
