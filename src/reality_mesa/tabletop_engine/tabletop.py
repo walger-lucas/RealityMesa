@@ -37,7 +37,7 @@ class Tabletop:
         self.undo_manager = UndoManager()
         if not cam_config:
             cam_config = {}
-        send_command(self.vision_queue,StartCamera(cam_config.pop("cam_id",0),cam_config.pop("fps",45),cam_config.pop("resolution",(1920,1080))))
+        send_command(self.vision_queue,StartCamera(cam_config.pop("cam_id",0),cam_config.pop("fps",45),cam_config.pop("resolution",(1920,1080)),120))
         
 
     def __GetId(self):

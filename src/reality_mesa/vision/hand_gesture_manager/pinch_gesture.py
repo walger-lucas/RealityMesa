@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from reality_mesa.infra.command_queue import CommandQueue, Command, send_command
 from reality_mesa.vision.homography.coord_transform import CoordTransformManager
-from .hand_gesture_generator import HandData, HandGesture,HandGestureGenerator
+from .hand_gesture_generator import HandData, HandGesture,HandGestureGenerator, FingerEnum
 if TYPE_CHECKING:
     from reality_mesa.tabletop_engine.tabletop import Tabletop
 import pygame
@@ -24,9 +24,9 @@ class PinchCommand(Command["Tabletop"]):
 
 @HandGestureGenerator.gesture_command
 class PinchGesture(HandGesture):
-    PRIORITY = 1
-
-    MIN_TIME_STOP = 0.1
+    PRIORITY = 10
+    STARTUP_TIME = 0.05
+    MIN_TIME_STOP = 0.01
 
     def __init__(self):
         super().__init__()

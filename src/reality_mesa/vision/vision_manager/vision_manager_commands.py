@@ -40,7 +40,7 @@ class StopCamera(Command[VisionManager]):
         input.StopCamera()
 
 class StartCamera(Command[VisionManager]):
-    def __init__(self,cam_id:int = 0, fps:int=45,size:tuple[int,int]=(1920,1080),max_time:float=5.0):
+    def __init__(self,cam_id:int = 0, fps:int=45,size:tuple[int,int]=(1920,1080),max_time:float=30.0):
         super().__init__()
         self.cam_id = cam_id
         self.fps = fps

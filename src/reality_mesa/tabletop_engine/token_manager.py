@@ -75,6 +75,15 @@ class TokenManager:
                 hit.append(poi)
         return hit
     
+    def TokenNear(self,pt:pygame.Vector2,max_distance:float,disconsider:list[int]|None = None):
+        hit:list[Token] = []
+        if disconsider == None:
+            disconsider = []
+        for tok in self._tokens.values():
+            if (tok.pos - pt).length() < max_distance and tok.id not in disconsider:
+                hit.append(tok)
+        return hit
+    
     def HitPoint(self,pt:pygame.Vector2,disconsider:list[int]|None = None):
         if disconsider == None:
             disconsider = []
@@ -134,9 +143,15 @@ class TokenManager:
         pos = self.tabletop.last_camera.Screen2World(position)
         if picker_id in self._pick_token:
             return
+        
         out = self.HitPoint(pos)
         if out is None:
-            return
+            close = self.TokenNear(pos,1.5)
+            if(len(close)==0):
+                return
+            close.sort(key= lambda key: (key.pos-pos).length())
+            out = close[0]
+
         if out.id in self._pick_token_inverse.keys():
             return
         self._pick_token_inverse[out.id] = picker_id

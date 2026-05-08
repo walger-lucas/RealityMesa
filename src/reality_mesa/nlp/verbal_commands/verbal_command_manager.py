@@ -5,6 +5,7 @@ from reality_mesa.nlp.context_manager.context_commands import UpdatePointers,Upd
 from .verbal_commands import verbal_commands_registry
 from RealtimeSTT import AudioToTextRecorder
 from spacy.tokens import Span
+import time
 class VerbalCommandManager():
     def __init__(self,tt_queue:CommandQueue[Tabletop],ctx_queue:CommandQueue[ContextTask],recorder:AudioToTextRecorder) -> None:
         self.tt_queue = tt_queue
@@ -29,13 +30,19 @@ class VerbalCommandManager():
             send_command(self.ctx_queue,UpdateCtx(update_ctx))
 
     def Run(self):
-        
+        time_start = time.monotonic()
         while(self.run):
+            
             txt = self.recorder.text()
+            time_start = time.monotonic()
             if(self.run):
                 if isinstance(txt,str):
                     print("falante: " + txt)
                     self.ProcessText(txt)
+                    print(f"awaitttt")
+                    now = time.monotonic()-time_start
+                    print(f" {time_start} s de processamento")
+                    print(f"awaitttt")
     def Stop(self):
         self.run = False
         self.recorder.shutdown()

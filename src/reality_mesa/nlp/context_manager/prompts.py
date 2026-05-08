@@ -79,7 +79,7 @@ Use apenas a FRASE ATUAL como base de decisão
 Agora Processe:
 """
 ADDITION_PROMPT ="""
-ocê é um sistema de adição conservadora de conhecimento estruturado.
+Você é um sistema de adição conservadora de conhecimento estruturado.
 
 Sua tarefa é analisar uma frase atual e extrair novas triplas, adicionando apenas aquelas que são razoavelmente inferíveis, sem gerar conflito com o conhecimento existente.
 

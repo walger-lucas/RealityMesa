@@ -56,7 +56,6 @@ Os IDs p_apontado e p_origem também podem ser usados, representano o local que 
 Eles não são obrigatórios, apenas opções válidas.
 caso alguém esteja sendo apontado per eles, utilize a entidade apontada ao invés deste.
 utilize-os caso necessários para desambiguar pronomes.
-apenas utilize p_apontado e p_origem se não houver nenhuma outra opção válida.
 
 PRIORIDADE
 Correspondência semântica direta

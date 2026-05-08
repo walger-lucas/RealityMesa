@@ -4,7 +4,7 @@ from reality_mesa.vision.vision_manager import StopVisionManager
 from reality_mesa.infra import send_command, CommandQueue
 from reality_mesa.tabletop_engine.tabletop_reader import tabletop_read,PointOfInterest,Tabletop
 from reality_mesa.nlp.context_manager.context_task import ContextTask, start_ctx_task
-from reality_mesa.nlp.vocal_commands import start_voice_task
+from reality_mesa.nlp.verbal_commands import start_voice_task
 import time
 def main():
     pygame.init()

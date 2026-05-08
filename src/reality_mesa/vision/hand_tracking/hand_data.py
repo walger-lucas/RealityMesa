@@ -88,7 +88,7 @@ class HandTracker:
         FingerEnum.RING_FINGER : (0.5,0.6,0.67),
         FingerEnum.LITTLE_FINGER : (0.5,0.6,0.67),
     }
-    __PINCH_ACTIVATION = (1.8,2.4)
+    __PINCH_ACTIVATION = (1.5,2.0)
     __DIRECTION_ACTIVATION = (-0.5,0.5)
     __ACTIVATION_HITCOUNT = 1/64
 
@@ -166,15 +166,16 @@ class HandTracker:
         dot = np.dot(BA, BC)
         return np.arccos(dot)
     
-    def FindDistance(self,a,b,normalization = DistanceNorm.DONT_NORMALIZE):
-        BA = self.landmarks[a] - self.landmarks[b]
+    def FindDistance(self,a,b,normalization = DistanceNorm.DONT_NORMALIZE,world = "world"):
+        k = self.world_landmarks if world == "world" else self.landmarks
+        BA = k[a] - k[b]
         dist = np.linalg.norm(BA)
         if normalization == DistanceNorm.DONT_NORMALIZE:
             return dist
         elif normalization == DistanceNorm.NORMALIZE_BY_INDEX:
-            norm = np.linalg.norm(self.landmarks[11]-self.landmarks[12])
+            norm = np.linalg.norm(k[11]-k[12])
         else:
-            norm = np.linalg.norm(self.landmarks[0]-self.landmarks[9])
+            norm = np.linalg.norm(k[3]-k[4])
         return dist/norm
     
     def __ProcessFingerOpening(self):
@@ -220,7 +221,7 @@ class HandTracker:
         add_vec = add_vec
         distance2 =  np.linalg.norm((add_vec+self.landmarks[4]) - self.landmarks[8])
         distance2 = distance2/np.linalg.norm(self.landmarks[7]- self.landmarks[8])
-        self.pinch_distance = distance2
+        self.pinch_distance = self.FindDistance(4,8,DistanceNorm.NORMALIZE_BY_KNUCKLE,"landmarks")
 
         if self.pinch_distance <= HandTracker.__PINCH_ACTIVATION[0]:
             self.pinch_hit_count += self.deltatime

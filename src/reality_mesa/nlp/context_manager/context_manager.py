@@ -232,9 +232,9 @@ ex. 5m03 | Eu vou até ali.
         
         id_dict["p_apontado"] = {
                 "id":"p_apontado",
-                "caracteristicas": [],
+                "caracteristicas": ["referenciado por até aqui","referenciado por até esse lugar","referenciado por aquele lugar","referenciado por aquele ponto"],
                 "caracteristicas especiais":["Posição que está sendo apontada pelo usuário, o fim de uma reta de medição de destino."\
-                    " Frases que possuem textos como daqui até ali, até esse lugar, aquele lugar, até aqule ponto, até aqui, ou mova/crie por essa reta/linha, representam esse objeto."\
+                    " Frases que possuem textos como até aqui, daqui até ali, até esse lugar, aquele lugar, até aquele ponto, ou mova/crie por essa reta/linha, representam esse objeto."\
                         " Outras entidades que falem sobre ponto de interesse de fim de caminho se referem a esta entidade."]
             }
         
